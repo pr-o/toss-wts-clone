@@ -188,7 +188,7 @@ export function RightSidebar() {
     <div className="flex h-full shrink-0 border-l border-[var(--tds-border-default)] text-xs">
 
       {/* Inner content panel */}
-      <div className="flex w-[220px] flex-col overflow-hidden bg-[var(--tds-surface-sidebar)]">
+      <div className="flex w-[280px] flex-col overflow-hidden bg-[var(--tds-surface-sidebar)]">
         {activeId === "my-invest" && <MyInvestPanel />}
         {activeId === "watchlist" && <WatchlistPanel />}
         {activeId === "recent"    && <EmptyPanel label="최근 본 종목이 없어요" />}

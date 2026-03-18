@@ -20,7 +20,7 @@ export function HomeView() {
   return (
     <div className="flex flex-1 overflow-hidden">
       {/* ── Main: market data + stock list ── */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex w-full max-w-4xl flex-col overflow-hidden">
 
         {/* Market type tabs */}
         <div className="flex shrink-0 items-center gap-1 border-b border-[var(--tds-border-default)] px-4 pt-2">
