@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useAnimationControls } from "motion/react";
+import { useRouter } from "next/navigation";
 import { cn, formatChange, getPriceDirection } from "@/lib/utils";
 import type { MarketIndex } from "@/types/stock";
 
@@ -19,6 +20,7 @@ function formatValue(value: number): string {
 
 export function BottomTicker() {
   const controls = useAnimationControls();
+  const router = useRouter();
   const { data: items = [] } = useQuery({
     queryKey: ["ticker"],
     queryFn: fetchTicker,
@@ -38,16 +40,21 @@ export function BottomTicker() {
         return (
           <span key={`${item.id}-${i}`} className="flex items-center">
             {i > 0 && <span className="mx-5 text-[var(--tds-border-strong)]">|</span>}
-            <span className="text-[var(--tds-text-secondary)]">{item.name}</span>
-            <span className="ml-1.5 tabular-nums font-medium text-[var(--tds-text-primary)]">
-              {formatValue(item.value)}
-            </span>
-            <span className={cn("ml-1 tabular-nums", {
-              "text-[var(--tds-text-rise)]": dir === "rise",
-              "text-[var(--tds-text-fall)]": dir === "fall",
-              "text-[var(--tds-text-tertiary)]": dir === "flat",
-            })}>
-              {formatChange(item.changeRate)}
+            <span
+              className="flex cursor-pointer items-center gap-0 rounded px-1 hover:bg-[var(--tds-surface-overlay)]"
+              onClick={() => router.push(`/indices/${item.id}`)}
+            >
+              <span className="text-[var(--tds-text-secondary)]">{item.name}</span>
+              <span className="ml-1.5 tabular-nums font-medium text-[var(--tds-text-primary)]">
+                {formatValue(item.value)}
+              </span>
+              <span className={cn("ml-1 tabular-nums", {
+                "text-[var(--tds-text-rise)]": dir === "rise",
+                "text-[var(--tds-text-fall)]": dir === "fall",
+                "text-[var(--tds-text-tertiary)]": dir === "flat",
+              })}>
+                {formatChange(item.changeRate)}
+              </span>
             </span>
           </span>
         );
