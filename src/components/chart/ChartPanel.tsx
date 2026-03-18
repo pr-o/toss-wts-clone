@@ -3,7 +3,17 @@
 import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createChart, type IChartApi, type ISeriesApi, CandlestickSeries } from "lightweight-charts";
+import { useThemeStore } from "@/stores/themeStore";
 import type { Candle } from "@/types/stock";
+
+function resolveChartColors() {
+  const s = getComputedStyle(document.documentElement);
+  return {
+    text:   s.getPropertyValue("--chart-text").trim(),
+    grid:   s.getPropertyValue("--chart-grid").trim(),
+    border: s.getPropertyValue("--chart-border").trim(),
+  };
+}
 
 interface ChartPanelProps {
   symbol: string;
@@ -18,6 +28,7 @@ export function ChartPanel({ symbol }: ChartPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const theme = useThemeStore((s) => s.theme);
 
   const { data: candles } = useQuery({
     queryKey: ["candles", symbol],
@@ -28,20 +39,22 @@ export function ChartPanel({ symbol }: ChartPanelProps) {
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const colors = resolveChartColors();
+
     const chart = createChart(containerRef.current, {
       width:  containerRef.current.clientWidth,
       height: containerRef.current.clientHeight,
       layout: {
         background: { color: "transparent" },
-        textColor: "var(--tds-text-secondary)",
+        textColor: colors.text,
       },
       grid: {
-        vertLines:   { color: "var(--tds-border-default)" },
-        horzLines:   { color: "var(--tds-border-default)" },
+        vertLines: { color: colors.grid },
+        horzLines: { color: colors.grid },
       },
       crosshair: { mode: 1 },
-      rightPriceScale: { borderColor: "var(--tds-border-default)" },
-      timeScale:       { borderColor: "var(--tds-border-default)" },
+      rightPriceScale: { borderColor: colors.border },
+      timeScale:       { borderColor: colors.border },
     });
 
     const series = chart.addSeries(CandlestickSeries, {
@@ -67,6 +80,18 @@ export function ChartPanel({ symbol }: ChartPanelProps) {
       chart.remove();
     };
   }, []);
+
+  // Re-apply colors when theme switches
+  useEffect(() => {
+    if (!chartRef.current) return;
+    const colors = resolveChartColors();
+    chartRef.current.applyOptions({
+      layout:          { textColor: colors.text },
+      grid:            { vertLines: { color: colors.grid }, horzLines: { color: colors.grid } },
+      rightPriceScale: { borderColor: colors.border },
+      timeScale:       { borderColor: colors.border },
+    });
+  }, [theme]);
 
   // Update data
   useEffect(() => {

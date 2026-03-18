@@ -35,6 +35,11 @@
   /* Adaptive (used as var(--background) etc) */
   --background: var(--tds-surface-base);
   --foreground: var(--tds-text-primary);
+
+  /* Chart-specific hex tokens (lightweight-charts cannot parse oklch) */
+  --chart-text:       #737373;
+  --chart-grid:       #e5e5e5;
+  --chart-border:     #d4d4d4;
 }
 
 [data-theme="dark"] {
@@ -63,6 +68,11 @@
 
   --background: var(--tds-surface-base);
   --foreground: var(--tds-text-primary);
+
+  /* Chart hex tokens — dark overrides */
+  --chart-text:       #a3a3a3;
+  --chart-grid:       #404040;
+  --chart-border:     #525252;
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */
