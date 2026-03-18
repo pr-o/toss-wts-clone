@@ -41,7 +41,7 @@ export function BottomTicker() {
           <span key={`${item.id}-${i}`} className="flex items-center">
             {i > 0 && <span className="mx-5 text-[var(--tds-border-strong)]">|</span>}
             <span
-              className="flex cursor-pointer items-center gap-0 rounded px-1 hover:bg-[var(--tds-surface-overlay)]"
+              className="flex cursor-pointer items-center gap-0 rounded px-1.5 py-0.5 transition-colors hover:bg-[var(--tds-surface-elevated)] hover:ring-1 hover:ring-[var(--tds-border-strong)]"
               onClick={() => router.push(`/indices/${item.id}`)}
             >
               <span className="text-[var(--tds-text-secondary)]">{item.name}</span>
