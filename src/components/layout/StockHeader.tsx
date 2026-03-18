@@ -23,15 +23,16 @@ const DETAIL_TABS = [
 
 type DetailTabId = (typeof DETAIL_TABS)[number]["id"];
 
-export function StockHeader() {
+export function StockHeader({ symbol: symbolProp }: { symbol?: string }) {
   const activeSymbol = usePanelStore((s) => s.activeSymbol);
+  const symbol = symbolProp ?? activeSymbol;
   const { has, add, remove } = useWatchlistStore();
   const [activeTab, setActiveTab] = useState<DetailTabId>("chart");
-  const isWatched = has(activeSymbol);
+  const isWatched = has(symbol);
 
   const { data: stock } = useQuery({
-    queryKey: ["stock", activeSymbol],
-    queryFn: () => fetchStock(activeSymbol),
+    queryKey: ["stock", symbol],
+    queryFn: () => fetchStock(symbol),
     refetchInterval: 5_000,
   });
 
@@ -89,7 +90,7 @@ export function StockHeader() {
           {/* Watchlist + heart */}
           <div className="flex items-center gap-1">
             <button
-              onClick={() => isWatched ? remove(activeSymbol) : add(activeSymbol)}
+              onClick={() => isWatched ? remove(symbol) : add(symbol)}
               className={cn(
                 "flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-[var(--tds-surface-overlay)]",
                 isWatched ? "text-yellow-400" : "text-[var(--tds-text-tertiary)]"

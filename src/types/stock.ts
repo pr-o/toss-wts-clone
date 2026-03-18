@@ -11,6 +11,50 @@ export interface Stock {
   low: number;
   open: number;
   prevClose: number;
+  // Home page ranking extras
+  rank?: number;
+  tradeVolumeBillion?: number;  // 거래대금 순 (억원)
+  buyRatio?: number;            // 0–100, buyer percentage
+  avatarColor?: string;         // hex color for avatar circle
+}
+
+export interface CommunityPost {
+  id: string;
+  symbol: string;
+  username: string;
+  avatarColor: string;
+  minutesAgo: number;
+  content: string;
+  likes: number;
+}
+
+export interface NewsHeadline {
+  id: string;
+  symbol: string;
+  content: string;
+  hoursAgo: number;
+  iconColor: string;
+}
+
+export interface InvestorTrend {
+  symbol: string;
+  retail: number;       // 개인 (net buy quantity)
+  foreign: number;      // 외국인
+  institution: number;  // 기관
+  history: Array<{
+    date: string;
+    retail: number;
+    foreign: number;
+    institution: number;
+  }>;
+}
+
+export interface Trade {
+  price: number;
+  quantity: number;
+  changeRate: number;
+  totalVolume: number;
+  time: string;
 }
 
 export interface MarketIndex {

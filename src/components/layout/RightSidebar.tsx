@@ -3,6 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Star, Clock, BarChart2, ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
+
+const ORDER_HISTORY_TABS = ["대기", "완료", "조건주문"] as const;
+type OrderHistoryTab = (typeof ORDER_HISTORY_TABS)[number];
 import { useWatchlistStore } from "@/stores/watchlistStore";
 import { usePanelStore } from "@/stores/panelStore";
 import { formatChange, formatPrice, getPriceDirection, cn } from "@/lib/utils";
@@ -27,6 +30,8 @@ export function RightSidebar() {
   const { data: stocks = [] } = useQuery({ queryKey: ["stocks"], queryFn: fetchStocks });
   const [investTab, setInvestTab] = useState<InvestTabId>("watchlist");
   const [investOpen, setInvestOpen] = useState(true);
+  const [orderTab, setOrderTab] = useState<OrderHistoryTab>("대기");
+  const [orderOpen, setOrderOpen] = useState(true);
 
   const watchlistStocks = stocks.filter((s) => symbols.includes(s.symbol));
 
@@ -132,6 +137,55 @@ export function RightSidebar() {
               {investTab === "realtime" && (
                 <div className="px-3 py-6 text-center text-[10px] text-[var(--tds-text-tertiary)]">실시간 종목이 없어요</div>
               )}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* ── 주문내역 section ──────────────────────────── */}
+      <div className="shrink-0 border-t border-[var(--tds-border-default)]">
+        {/* Section header */}
+        <div className="flex items-center justify-between px-3 py-2">
+          <span className="text-[11px] font-semibold text-[var(--tds-text-primary)]">주문내역</span>
+          <button
+            onClick={() => setOrderOpen((o) => !o)}
+            className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+          >
+            <ChevronDown
+              size={13}
+              className={cn("transition-transform", orderOpen ? "" : "-rotate-90")}
+            />
+          </button>
+        </div>
+
+        {orderOpen && (
+          <>
+            {/* Sub-tabs */}
+            <div className="flex border-b border-[var(--tds-border-default)]">
+              {ORDER_HISTORY_TABS.map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setOrderTab(tab)}
+                  className={cn(
+                    "relative flex-1 py-1.5 text-[10px] transition-colors",
+                    orderTab === tab
+                      ? "font-semibold text-[var(--tds-text-primary)]"
+                      : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+                  )}
+                >
+                  {tab}
+                  {orderTab === tab && (
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--tds-text-brand)]" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Empty state */}
+            <div className="px-3 py-5 text-center text-[10px] text-[var(--tds-text-tertiary)]">
+              {orderTab === "대기" && "대기중인 주문이 없어요"}
+              {orderTab === "완료" && "완료된 주문이 없어요"}
+              {orderTab === "조건주문" && "조건주문이 없어요"}
             </div>
           </>
         )}

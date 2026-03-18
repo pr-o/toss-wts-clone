@@ -2,29 +2,43 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { PanelLayout, PanelNode, PanelType } from "@/types/panel";
 
+// Stock detail page layout (images #4 / #5):
+// ┌─────────────────┬─────────────┬──────────────┐
+// │  Chart          │  호가       │  Order Form  │
+// │                 │             │  (full ht)   │
+// ├─────────────────┼─────────────┤              │
+// │  Community      │  투자자동향 │              │
+// └─────────────────┴─────────────┴──────────────┘
 const DEFAULT_LAYOUT: PanelLayout = {
-  version: 1,
+  version: 2,
   root: {
     type: "split",
     id: "root-split",
     orientation: "H",
-    ratio: 0.55,
+    ratio: 0.70,   // left 70% (chart+orderbook) | right 30% (order form)
     left: {
       type: "split",
-      id: "left-split",
-      orientation: "V",
-      ratio: 0.6,
-      left:  { type: "panel", id: "chart-panel",     panelType: "chart",     symbol: "005930" },
-      right: { type: "panel", id: "orderbook-panel", panelType: "orderbook", symbol: "005930" },
+      id: "content-split",
+      orientation: "H",
+      ratio: 0.58,  // chart column 58% | orderbook column 42%
+      left: {
+        type: "split",
+        id: "chart-col",
+        orientation: "V",
+        ratio: 0.60,
+        left:  { type: "panel", id: "chart-panel",     panelType: "chart",     symbol: "005930" },
+        right: { type: "panel", id: "community-panel", panelType: "community", symbol: "005930" },
+      },
+      right: {
+        type: "split",
+        id: "ob-col",
+        orientation: "V",
+        ratio: 0.55,
+        left:  { type: "panel", id: "orderbook-panel",  panelType: "orderbook",       symbol: "005930" },
+        right: { type: "panel", id: "investor-panel",   panelType: "investor-trend",  symbol: "005930" },
+      },
     },
-    right: {
-      type: "split",
-      id: "right-split",
-      orientation: "V",
-      ratio: 0.65,
-      left:  { type: "panel", id: "realtime-panel", panelType: "realtime", symbol: "005930" },
-      right: { type: "panel", id: "order-panel",    panelType: "order",    symbol: "005930" },
-    },
+    right: { type: "panel", id: "order-form-panel", panelType: "order-form", symbol: "005930" },
   },
 };
 

@@ -1,5 +1,10 @@
-import { WTSLayout } from "@/components/layout/WTSLayout";
+import { WTSShell } from "@/components/layout/WTSShell";
+import { HomeView } from "@/components/home/HomeView";
 
 export default function Home() {
-  return <WTSLayout />;
+  return (
+    <WTSShell>
+      <HomeView />
+    </WTSShell>
+  );
 }

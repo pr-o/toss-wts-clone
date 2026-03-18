@@ -1,10 +1,12 @@
 export type PanelType =
   | "chart"
   | "orderbook"
-  | "realtime"
-  | "order"
-  | "news"
+  | "order-form"
   | "community"
+  | "investor-trend"
+  | "market-data"
+  | "realtime"
+  | "news"
   | "home"
   | "stock-detail";
 

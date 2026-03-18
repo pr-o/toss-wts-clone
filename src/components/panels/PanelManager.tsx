@@ -4,19 +4,19 @@ import { usePanelStore } from "@/stores/panelStore";
 import type { PanelNode } from "@/types/panel";
 import { ChartPanel } from "@/components/chart/ChartPanel";
 import { OrderBookPanel } from "@/components/orderbook/OrderBookPanel";
+import { OrderFormPanel } from "./OrderFormPanel";
+import { CommunityPanel } from "./CommunityPanel";
+import { InvestorTrendPanel } from "./InvestorTrendPanel";
 
-/**
- * Recursively renders the binary-tree panel layout.
- * SplitNodes render two children side-by-side (H) or stacked (V).
- * PanelLeafs render the corresponding panel component.
- */
-function renderNode(node: PanelNode): React.ReactNode {
+function renderNode(node: PanelNode, symbolOverride?: string): React.ReactNode {
   if (node.type === "panel") {
-    const symbol = node.symbol ?? "005930";
+    const symbol = symbolOverride ?? node.symbol ?? "005930";
     switch (node.panelType) {
-      case "chart":     return <ChartPanel key={node.id} symbol={symbol} />;
-      case "orderbook": return <OrderBookPanel key={node.id} symbol={symbol} />;
-      // TODO: implement remaining panel types
+      case "chart":          return <ChartPanel        key={node.id} symbol={symbol} />;
+      case "orderbook":      return <OrderBookPanel    key={node.id} symbol={symbol} />;
+      case "order-form":     return <OrderFormPanel    key={node.id} symbol={symbol} />;
+      case "community":      return <CommunityPanel    key={node.id} symbol={symbol} />;
+      case "investor-trend": return <InvestorTrendPanel key={node.id} symbol={symbol} />;
       default:
         return (
           <div key={node.id} className="flex h-full items-center justify-center bg-[var(--tds-surface-elevated)] text-xs text-[var(--tds-text-tertiary)]">
@@ -26,28 +26,25 @@ function renderNode(node: PanelNode): React.ReactNode {
     }
   }
 
-  const isHorizontal = node.orientation === "H";
+  const isH       = node.orientation === "H";
   const leftSize  = `${node.ratio * 100}%`;
   const rightSize = `${(1 - node.ratio) * 100}%`;
 
   return (
-    <div
-      key={node.id}
-      className={`flex h-full w-full ${isHorizontal ? "flex-row" : "flex-col"}`}
-    >
-      <div style={{ [isHorizontal ? "width" : "height"]: leftSize }} className="overflow-hidden">
-        {renderNode(node.left)}
+    <div key={node.id} className={`flex h-full w-full ${isH ? "flex-row" : "flex-col"}`}>
+      <div style={{ [isH ? "width" : "height"]: leftSize }} className="overflow-hidden">
+        {renderNode(node.left, symbolOverride)}
       </div>
-      {/* Resize handle — drag interaction to be implemented */}
-      <div className={`shrink-0 bg-[var(--tds-border-default)] ${isHorizontal ? "w-px cursor-col-resize" : "h-px cursor-row-resize"}`} />
-      <div style={{ [isHorizontal ? "width" : "height"]: rightSize }} className="overflow-hidden">
-        {renderNode(node.right)}
+      <div className={`shrink-0 bg-[var(--tds-border-default)] ${isH ? "w-px cursor-col-resize" : "h-px cursor-row-resize"}`} />
+      <div style={{ [isH ? "width" : "height"]: rightSize }} className="overflow-hidden">
+        {renderNode(node.right, symbolOverride)}
       </div>
     </div>
   );
 }
 
-export function PanelManager() {
-  const { layout } = usePanelStore();
-  return <div className="h-full w-full overflow-hidden">{renderNode(layout.root)}</div>;
+export function PanelManager({ symbol }: { symbol?: string }) {
+  const { layout, activeSymbol } = usePanelStore();
+  const sym = symbol ?? activeSymbol;
+  return <div className="h-full w-full overflow-hidden">{renderNode(layout.root, sym)}</div>;
 }
