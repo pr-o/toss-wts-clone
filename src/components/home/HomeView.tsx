@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { StockRankList } from "./StockRankList";
-import { StockPreviewCard } from "./StockPreviewCard";
 import { MarketDataStrip } from "./MarketDataStrip";
 
 const VIEW_TABS = ["실시간 차트", "지금 뜨는 카테고리", "국내 투자자 동향"] as const;
@@ -20,8 +19,8 @@ export function HomeView() {
 
   return (
     <div className="flex flex-1 overflow-hidden">
-      {/* ── Left+Center: market data + stock list ── */}
-      <div className="flex flex-1 flex-col overflow-hidden border-r border-[var(--tds-border-default)]">
+      {/* ── Main: market data + stock list ── */}
+      <div className="flex flex-1 flex-col overflow-hidden">
 
         {/* Market type tabs */}
         <div className="flex shrink-0 items-center gap-1 border-b border-[var(--tds-border-default)] px-4 pt-2">
@@ -84,11 +83,6 @@ export function HomeView() {
 
         {/* Stock ranking list */}
         <StockRankList onFocus={setFocusedSymbol} focusedSymbol={focusedSymbol} />
-      </div>
-
-      {/* ── Right panel: stock preview ── */}
-      <div className="w-72 shrink-0 overflow-y-auto">
-        <StockPreviewCard symbol={focusedSymbol} />
       </div>
     </div>
   );

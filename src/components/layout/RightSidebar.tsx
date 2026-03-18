@@ -3,9 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Star, Clock, BarChart2, ChevronDown, ChevronRight, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
-
-const ORDER_HISTORY_TABS = ["대기", "완료", "조건주문"] as const;
-type OrderHistoryTab = (typeof ORDER_HISTORY_TABS)[number];
 import { useWatchlistStore } from "@/stores/watchlistStore";
 import { usePanelStore } from "@/stores/panelStore";
 import { formatChange, formatPrice, getPriceDirection, cn } from "@/lib/utils";
@@ -24,12 +21,15 @@ const INVEST_TABS = [
 
 type InvestTabId = (typeof INVEST_TABS)[number]["id"];
 
+const ORDER_HISTORY_TABS = ["대기", "완료", "조건주문"] as const;
+type OrderHistoryTab = (typeof ORDER_HISTORY_TABS)[number];
+
 export function RightSidebar() {
   const { symbols } = useWatchlistStore();
   const setActiveSymbol = usePanelStore((s) => s.setActiveSymbol);
-  const { data: stocks = [] } = useQuery({ queryKey: ["stocks"], queryFn: fetchStocks });
+  const { data: stocks = [] } = useQuery({ queryKey: ["stocks"], queryFn: fetchStocks, refetchInterval: 5_000 });
   const [investTab, setInvestTab] = useState<InvestTabId>("watchlist");
-  const [investOpen, setInvestOpen] = useState(true);
+  const [accountOpen, setAccountOpen] = useState(true);
   const [orderTab, setOrderTab] = useState<OrderHistoryTab>("대기");
   const [orderOpen, setOrderOpen] = useState(true);
 
@@ -38,129 +38,120 @@ export function RightSidebar() {
   return (
     <aside className="flex w-[220px] shrink-0 flex-col border-l border-[var(--tds-border-default)] bg-[var(--tds-surface-sidebar)] text-xs">
 
-      {/* ── 기본계좌 header ────────────────────────────── */}
-      <div className="border-b border-[var(--tds-border-default)] px-3 pt-3 pb-2">
-        <div className="mb-2 flex items-center justify-between">
+      {/* ── 관심종목 / 내 투자 ────────────────────────── */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+        {/* Section header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--tds-border-default)] px-3 py-2">
+          <span className="text-[11px] font-semibold text-[var(--tds-text-primary)]">관심종목</span>
+        </div>
+
+        {/* Sub-tabs: 관심 / 최근 본 / 실시간 */}
+        <div className="flex shrink-0 border-b border-[var(--tds-border-default)]">
+          {INVEST_TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setInvestTab(id)}
+              className={cn(
+                "relative flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors",
+                investTab === id
+                  ? "text-[var(--tds-text-brand)]"
+                  : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+              )}
+            >
+              <Icon size={13} />
+              <span className="text-[10px]">{label}</span>
+              {investTab === id && (
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-[var(--tds-text-brand)]" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Stock list */}
+        <div className="flex-1 overflow-y-auto">
+          {investTab === "watchlist" && (
+            watchlistStocks.length === 0
+              ? <div className="px-3 py-6 text-center text-[10px] text-[var(--tds-text-tertiary)]">관심 종목을 추가해보세요</div>
+              : watchlistStocks.map((stock) => {
+                  const dir = getPriceDirection(stock.changeRate);
+                  return (
+                    <button
+                      key={stock.symbol}
+                      onClick={() => setActiveSymbol(stock.symbol)}
+                      className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-[var(--tds-surface-overlay)]"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate font-medium text-[var(--tds-text-primary)]">{stock.name}</div>
+                        <div className="text-[10px] text-[var(--tds-text-tertiary)]">{stock.symbol}</div>
+                      </div>
+                      <div className="ml-2 shrink-0 text-right">
+                        <div className="tabular-nums text-[var(--tds-text-primary)]">{formatPrice(stock.price)}</div>
+                        <div className={cn("tabular-nums", {
+                          "text-[var(--tds-text-rise)]": dir === "rise",
+                          "text-[var(--tds-text-fall)]": dir === "fall",
+                          "text-[var(--tds-text-tertiary)]": dir === "flat",
+                        })}>
+                          {formatChange(stock.changeRate)}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })
+          )}
+          {investTab === "recent" && (
+            <div className="px-3 py-6 text-center text-[10px] text-[var(--tds-text-tertiary)]">최근 본 종목이 없어요</div>
+          )}
+          {investTab === "realtime" && (
+            <div className="px-3 py-6 text-center text-[10px] text-[var(--tds-text-tertiary)]">실시간 종목이 없어요</div>
+          )}
+        </div>
+      </div>
+
+      {/* ── 기본계좌 ──────────────────────────────────── */}
+      <div className="shrink-0 border-t border-[var(--tds-border-default)]">
+        <div className="flex items-center justify-between px-3 py-2">
           <span className="text-[11px] font-semibold text-[var(--tds-text-primary)]">기본계좌</span>
           <div className="flex items-center gap-1 text-[var(--tds-text-tertiary)]">
+            <button
+              onClick={() => setAccountOpen((o) => !o)}
+              className="rounded p-0.5 hover:bg-[var(--tds-surface-overlay)]"
+            >
+              <ChevronDown size={12} className={cn("transition-transform", accountOpen ? "" : "-rotate-90")} />
+            </button>
             <button className="rounded p-0.5 hover:bg-[var(--tds-surface-overlay)]"><MoreHorizontal size={12} /></button>
             <button className="rounded p-0.5 hover:bg-[var(--tds-surface-overlay)]"><ChevronRight size={12} /></button>
           </div>
         </div>
 
-        {/* 원화 / 달러 balance */}
-        <div className="flex gap-3">
-          <div className="flex-1">
-            <div className="mb-0.5 text-[10px] text-[var(--tds-text-tertiary)]">원화</div>
-            <div className="font-semibold tabular-nums text-[var(--tds-text-primary)]">0원</div>
-          </div>
-          <div className="w-px bg-[var(--tds-border-default)]" />
-          <div className="flex-1">
-            <div className="mb-0.5 text-[10px] text-[var(--tds-text-tertiary)]">달러</div>
-            <div className="font-semibold tabular-nums text-[var(--tds-text-primary)]">$0.00</div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── 내 투자 section ───────────────────────────── */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Section header */}
-        <div className="flex items-center justify-between border-b border-[var(--tds-border-default)] px-3 py-2">
-          <span className="text-[11px] font-semibold text-[var(--tds-text-primary)]">내 투자</span>
-          <button
-            onClick={() => setInvestOpen((o) => !o)}
-            className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-          >
-            <ChevronDown
-              size={13}
-              className={cn("transition-transform", investOpen ? "" : "-rotate-90")}
-            />
-          </button>
-        </div>
-
-        {investOpen && (
-          <>
-            {/* Sub-tabs: 관심 / 최근 본 / 실시간 */}
-            <div className="flex border-b border-[var(--tds-border-default)]">
-              {INVEST_TABS.map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setInvestTab(id)}
-                  className={cn(
-                    "flex flex-1 flex-col items-center gap-0.5 py-2 transition-colors",
-                    investTab === id
-                      ? "text-[var(--tds-text-brand)]"
-                      : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-                  )}
-                >
-                  <Icon size={13} />
-                  <span className="text-[10px]">{label}</span>
-                  {investTab === id && (
-                    <span className="absolute h-[2px] w-8 rounded-full bg-[var(--tds-text-brand)]" />
-                  )}
-                </button>
-              ))}
+        {accountOpen && (
+          <div className="flex gap-3 px-3 pb-2">
+            <div className="flex-1">
+              <div className="mb-0.5 text-[10px] text-[var(--tds-text-tertiary)]">원화</div>
+              <div className="font-semibold tabular-nums text-[var(--tds-text-primary)]">0원</div>
             </div>
-
-            {/* Stock list */}
-            <div className="flex-1 overflow-y-auto">
-              {investTab === "watchlist" && watchlistStocks.map((stock) => {
-                const dir = getPriceDirection(stock.changeRate);
-                return (
-                  <button
-                    key={stock.symbol}
-                    onClick={() => setActiveSymbol(stock.symbol)}
-                    className="flex w-full items-center justify-between px-3 py-2.5 text-left transition-colors hover:bg-[var(--tds-surface-overlay)]"
-                  >
-                    <div className="min-w-0">
-                      <div className="truncate font-medium text-[var(--tds-text-primary)]">{stock.name}</div>
-                      <div className="text-[10px] text-[var(--tds-text-tertiary)]">{stock.symbol}</div>
-                    </div>
-                    <div className="ml-2 shrink-0 text-right">
-                      <div className="tabular-nums text-[var(--tds-text-primary)]">
-                        {formatPrice(stock.price)}
-                      </div>
-                      <div className={cn("tabular-nums", {
-                        "text-[var(--tds-text-rise)]": dir === "rise",
-                        "text-[var(--tds-text-fall)]": dir === "fall",
-                        "text-[var(--tds-text-tertiary)]": dir === "flat",
-                      })}>
-                        {formatChange(stock.changeRate)}
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-              {investTab === "recent" && (
-                <div className="px-3 py-6 text-center text-[10px] text-[var(--tds-text-tertiary)]">최근 본 종목이 없어요</div>
-              )}
-              {investTab === "realtime" && (
-                <div className="px-3 py-6 text-center text-[10px] text-[var(--tds-text-tertiary)]">실시간 종목이 없어요</div>
-              )}
+            <div className="w-px bg-[var(--tds-border-default)]" />
+            <div className="flex-1">
+              <div className="mb-0.5 text-[10px] text-[var(--tds-text-tertiary)]">달러</div>
+              <div className="font-semibold tabular-nums text-[var(--tds-text-primary)]">$0.00</div>
             </div>
-          </>
+          </div>
         )}
       </div>
 
-      {/* ── 주문내역 section ──────────────────────────── */}
+      {/* ── 주문내역 ──────────────────────────────────── */}
       <div className="shrink-0 border-t border-[var(--tds-border-default)]">
-        {/* Section header */}
         <div className="flex items-center justify-between px-3 py-2">
           <span className="text-[11px] font-semibold text-[var(--tds-text-primary)]">주문내역</span>
           <button
             onClick={() => setOrderOpen((o) => !o)}
             className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
           >
-            <ChevronDown
-              size={13}
-              className={cn("transition-transform", orderOpen ? "" : "-rotate-90")}
-            />
+            <ChevronDown size={13} className={cn("transition-transform", orderOpen ? "" : "-rotate-90")} />
           </button>
         </div>
 
         {orderOpen && (
           <>
-            {/* Sub-tabs */}
             <div className="flex border-b border-[var(--tds-border-default)]">
               {ORDER_HISTORY_TABS.map((tab) => (
                 <button
@@ -180,9 +171,7 @@ export function RightSidebar() {
                 </button>
               ))}
             </div>
-
-            {/* Empty state */}
-            <div className="px-3 py-5 text-center text-[10px] text-[var(--tds-text-tertiary)]">
+            <div className="px-3 py-4 text-center text-[10px] text-[var(--tds-text-tertiary)]">
               {orderTab === "대기" && "대기중인 주문이 없어요"}
               {orderTab === "완료" && "완료된 주문이 없어요"}
               {orderTab === "조건주문" && "조건주문이 없어요"}
