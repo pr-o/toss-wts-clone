@@ -59,6 +59,9 @@ export function MarketDataStrip() {
       <button className="flex shrink-0 items-center px-2 text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
         <ChevronRight size={16} />
       </button>
+
+      {/* Fill remaining width */}
+      <div className="flex-1" />
     </div>
   );
 }

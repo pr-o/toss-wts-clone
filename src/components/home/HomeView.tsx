@@ -18,23 +18,24 @@ export function HomeView() {
   const [focusedSymbol, setFocusedSymbol] = useState<string>("000660");
 
   return (
-    <div className="flex flex-1 overflow-hidden">
-      {/* ── Main: market data + stock list ── */}
+    <div className="flex flex-1 flex-col overflow-hidden">
+
+      {/* ── Full-width: market type tabs + strip ── */}
+      <div className="flex shrink-0 items-center gap-1 border-b border-[var(--tds-border-default)] px-4 pt-2">
+        {(["국내 정규장", "해외 데이터마켓"] as const).map((tab) => (
+          <button key={tab}
+            className={`flex items-center gap-1 px-0 pb-2 text-xs mr-4 border-b-2 transition-colors ${tab === "국내 정규장" ? "border-[var(--tds-text-primary)] font-semibold text-[var(--tds-text-primary)]" : "border-transparent text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"}`}>
+            {tab === "국내 정규장" && <span className="h-1.5 w-1.5 rounded-full bg-[var(--tds-text-rise)]" />}
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Market data strip — spans full width to the sidebar */}
+      <MarketDataStrip />
+
+      {/* ── Constrained: view tabs + filters + list ── */}
       <div className="flex w-full max-w-4xl flex-col overflow-hidden">
-
-        {/* Market type tabs */}
-        <div className="flex shrink-0 items-center gap-1 border-b border-[var(--tds-border-default)] px-4 pt-2">
-          {(["국내 정규장", "해외 데이터마켓"] as const).map((tab) => (
-            <button key={tab}
-              className={`flex items-center gap-1 px-0 pb-2 text-xs mr-4 border-b-2 transition-colors ${tab === "국내 정규장" ? "border-[var(--tds-text-primary)] font-semibold text-[var(--tds-text-primary)]" : "border-transparent text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"}`}>
-              {tab === "국내 정규장" && <span className="h-1.5 w-1.5 rounded-full bg-[var(--tds-text-rise)]" />}
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* Market data strip */}
-        <MarketDataStrip />
 
         {/* View tabs */}
         <div className="flex shrink-0 border-b border-[var(--tds-border-default)] px-4">
