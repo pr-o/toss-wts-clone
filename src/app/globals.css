@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
+/* ── TDS Color Tokens (OKLCH-based, mirroring Toss Design System) ────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --tds-blue-500: oklch(54% 0.2 250);
+  --tds-blue-400: oklch(63% 0.19 250);
+  --tds-blue-300: oklch(73% 0.16 250);
+
+  /* Semantic fill */
+  --tds-fill-brand:       var(--tds-blue-500);
+  --tds-fill-primary:     oklch(15% 0 0);
+  --tds-fill-secondary:   oklch(25% 0 0);
+  --tds-fill-tertiary:    oklch(35% 0 0);
+  --tds-fill-neutral:     oklch(92% 0 0);
+
+  /* Semantic text */
+  --tds-text-primary:     oklch(15% 0 0);
+  --tds-text-secondary:   oklch(45% 0 0);
+  --tds-text-tertiary:    oklch(65% 0 0);
+  --tds-text-brand:       var(--tds-blue-500);
+  --tds-text-rise:        oklch(50% 0.22 25);   /* red — Korean market convention */
+  --tds-text-fall:        oklch(50% 0.18 248);  /* blue */
+
+  /* Border */
+  --tds-border-default:   oklch(88% 0 0);
+  --tds-border-strong:    oklch(75% 0 0);
+
+  /* Surface */
+  --tds-surface-base:     oklch(100% 0 0);
+  --tds-surface-elevated: oklch(97% 0 0);
+  --tds-surface-overlay:  oklch(94% 0 0);
+  --tds-surface-sidebar:  oklch(98% 0 0);
+
+  /* Adaptive (used as var(--background) etc) */
+  --background: var(--tds-surface-base);
+  --foreground: var(--tds-text-primary);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+[data-theme="dark"] {
+  --tds-blue-500: oklch(64% 0.19 250);
+
+  --tds-fill-brand:       var(--tds-blue-500);
+  --tds-fill-primary:     oklch(92% 0 0);
+  --tds-fill-secondary:   oklch(75% 0 0);
+  --tds-fill-tertiary:    oklch(55% 0 0);
+  --tds-fill-neutral:     oklch(25% 0 0);
+
+  --tds-text-primary:     oklch(95% 0 0);
+  --tds-text-secondary:   oklch(70% 0 0);
+  --tds-text-tertiary:    oklch(50% 0 0);
+  --tds-text-brand:       var(--tds-blue-500);
+  --tds-text-rise:        oklch(65% 0.22 25);
+  --tds-text-fall:        oklch(63% 0.18 248);
+
+  --tds-border-default:   oklch(28% 0 0);
+  --tds-border-strong:    oklch(38% 0 0);
+
+  --tds-surface-base:     oklch(12% 0 0);
+  --tds-surface-elevated: oklch(17% 0 0);
+  --tds-surface-overlay:  oklch(21% 0 0);
+  --tds-surface-sidebar:  oklch(14% 0 0);
+
+  --background: var(--tds-surface-base);
+  --foreground: var(--tds-text-primary);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
 }
 
 body {
+  height: 100%;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#__next,
+main {
+  height: 100%;
+}
+
+/* ── TDS Tailwind theme extensions ─────────────────────────────────────────── */
+@theme inline {
+  --color-background:    var(--background);
+  --color-foreground:    var(--foreground);
+
+  /* Surface */
+  --color-surface-base:     var(--tds-surface-base);
+  --color-surface-elevated: var(--tds-surface-elevated);
+  --color-surface-overlay:  var(--tds-surface-overlay);
+  --color-surface-sidebar:  var(--tds-surface-sidebar);
+
+  /* Text */
+  --color-text-primary:   var(--tds-text-primary);
+  --color-text-secondary: var(--tds-text-secondary);
+  --color-text-tertiary:  var(--tds-text-tertiary);
+  --color-text-brand:     var(--tds-text-brand);
+  --color-text-rise:      var(--tds-text-rise);
+  --color-text-fall:      var(--tds-text-fall);
+
+  /* Border */
+  --color-border-default: var(--tds-border-default);
+  --color-border-strong:  var(--tds-border-strong);
+
+  /* Brand */
+  --color-brand:          var(--tds-blue-500);
+}
+
+/* ── Scrollbar styling ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--tds-border-strong);
+  border-radius: 2px;
 }
