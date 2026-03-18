@@ -44,10 +44,10 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Column headers */}
-      <div className="grid shrink-0 grid-cols-[32px_28px_28px_1fr_100px_80px_70px_120px] items-center gap-1 border-b border-[var(--tds-border-default)] px-3 py-1.5 text-[10px] text-[var(--tds-text-tertiary)]">
-        <span />
+      <div className="grid shrink-0 grid-cols-[32px_28px_36px_1fr_100px_80px_70px_120px] items-center gap-2 border-b border-[var(--tds-border-default)] px-3 py-1.5 text-[10px] text-[var(--tds-text-tertiary)]">
         <span />
         <span>순위</span>
+        <span />
         <span>종목명</span>
         <span className="text-right">현재가</span>
         <span className="text-right">등락률</span>
@@ -70,7 +70,7 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
               onClick={() => { onFocus(stock.symbol); }}
               onDoubleClick={() => router.push(`/stocks/${stock.symbol}/order`)}
               className={cn(
-                "grid cursor-pointer grid-cols-[32px_28px_28px_1fr_100px_80px_70px_120px] items-center gap-1 px-3 py-2.5 text-xs transition-colors",
+                "grid cursor-pointer grid-cols-[32px_28px_36px_1fr_100px_80px_70px_120px] items-center gap-2 px-3 py-2.5 text-xs transition-colors",
                 isFocused ? "bg-[var(--tds-surface-overlay)]" : "hover:bg-[var(--tds-surface-elevated)]"
               )}
             >
@@ -84,11 +84,11 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
                 <Heart size={13} fill={watched ? "currentColor" : "none"} />
               </button>
 
-              {/* Avatar */}
-              <StockAvatar stock={stock} />
-
               {/* Rank */}
               <span className="font-medium text-[var(--tds-text-secondary)]">{stock.rank}</span>
+
+              {/* Avatar */}
+              <StockAvatar stock={stock} />
 
               {/* Name */}
               <div className="min-w-0">
