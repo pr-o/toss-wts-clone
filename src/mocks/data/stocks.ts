@@ -34,3 +34,15 @@ export const MARKET_INDICES: MarketIndex[] = [
   { id: "DJI",     name: "다우",     value: 37865.20, change: -45.30, changeRate: -0.12 },
   { id: "NQ1",     name: "나스닥선물", value: 16798.50, change: 45.20, changeRate: 0.27 },
 ];
+
+// Bottom ticker — financial indices (separate from the top-bar nav indices)
+export const TICKER_INDICES: MarketIndex[] = [
+  { id: "DJI",   name: "다우존스",         value: 46993.26, change: 46.85,  changeRate: 0.09 },
+  { id: "SOX",   name: "필라델피아 반도체", value: 7836.82,  change: 40.58,  changeRate: 0.52 },
+  { id: "VIX",   name: "VIX",             value: 22.37,    change: -1.14,  changeRate: -4.84 },
+  { id: "DXY",   name: "달러 인덱스",      value: 99.49,    change: -0.08,  changeRate: -0.08 },
+  { id: "USDKRW",name: "달러 환율",        value: 1485.15,  change: -6.45,  changeRate: -0.43 },
+  { id: "KOSPI2",name: "코스피",           value: 2581.54,  change: 18.24,  changeRate: 0.71 },
+  { id: "KOSDAQ2",name: "코스닥",          value: 860.73,   change: -4.37,  changeRate: -0.50 },
+  { id: "NQ1",   name: "나스닥선물",       value: 16726.09, change: 45.20,  changeRate: 0.27 },
+];

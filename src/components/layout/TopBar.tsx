@@ -1,61 +1,87 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Moon, Sun, Search } from "lucide-react";
+import { Moon, Sun, Search, User } from "lucide-react";
+import { useState } from "react";
 import { useThemeStore } from "@/stores/themeStore";
-import { formatChange, formatPrice, getPriceDirection, cn } from "@/lib/utils";
-import type { MarketIndex } from "@/types/stock";
+import { cn } from "@/lib/utils";
 
-async function fetchIndices(): Promise<MarketIndex[]> {
-  const res = await fetch("/api/indices");
-  return res.json();
-}
+const NAV_TABS = [
+  { id: "home",         label: "홈" },
+  { id: "feed",         label: "피드" },
+  { id: "stock-picker", label: "주식 골라보기" },
+  { id: "account",      label: "내 계좌" },
+] as const;
+
+type TabId = (typeof NAV_TABS)[number]["id"];
 
 export function TopBar() {
   const { theme, toggle } = useThemeStore();
-  const { data: indices = [] } = useQuery({ queryKey: ["indices"], queryFn: fetchIndices });
+  const [activeTab, setActiveTab] = useState<TabId>("home");
+  const [searchFocused, setSearchFocused] = useState(false);
 
   return (
-    <header className="flex h-10 items-center gap-0 border-b border-[var(--tds-border-default)] bg-[var(--tds-surface-elevated)] px-3 text-xs">
+    <header className="flex h-11 shrink-0 items-center gap-0 border-b border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-4">
       {/* Logo */}
-      <div className="mr-4 flex items-center gap-1.5 shrink-0">
-        <span className="font-bold text-[var(--tds-text-brand)] text-sm">토스증권</span>
+      <div className="mr-6 flex shrink-0 items-center gap-1">
+        <span className="text-sm font-bold text-[var(--tds-text-brand)]">토스증권</span>
       </div>
 
-      {/* Index pills */}
-      <div className="flex flex-1 items-center gap-3 overflow-x-auto">
-        {indices.map((idx) => {
-          const dir = getPriceDirection(idx.changeRate);
-          return (
-            <div key={idx.id} className="flex shrink-0 items-center gap-1.5">
-              <span className="text-[var(--tds-text-secondary)]">{idx.name}</span>
-              <span className="font-medium tabular-nums">{formatPrice(idx.value)}</span>
-              <span className={cn("tabular-nums", {
-                "text-[var(--tds-text-rise)]": dir === "rise",
-                "text-[var(--tds-text-fall)]": dir === "fall",
-                "text-[var(--tds-text-tertiary)]": dir === "flat",
-              })}>
-                {formatChange(idx.changeRate)}
-              </span>
-            </div>
-          );
-        })}
+      {/* Horizontal nav tabs */}
+      <nav className="flex items-center gap-1">
+        {NAV_TABS.map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={cn(
+              "relative rounded px-3 py-1.5 text-sm transition-colors",
+              activeTab === id
+                ? "font-semibold text-[var(--tds-text-primary)]"
+                : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+            )}
+          >
+            {label}
+            {activeTab === id && (
+              <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[var(--tds-text-brand)]" />
+            )}
+          </button>
+        ))}
+      </nav>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Search input */}
+      <div
+        className={cn(
+          "mr-2 flex h-8 w-52 items-center gap-2 rounded-lg border px-3 text-xs transition-all",
+          searchFocused
+            ? "border-[var(--tds-text-brand)] bg-[var(--tds-surface-base)]"
+            : "border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)]"
+        )}
+      >
+        <Search size={13} className="shrink-0 text-[var(--tds-text-tertiary)]" />
+        <input
+          type="text"
+          placeholder="/ 눌러 검색하세요"
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
+          className="w-full bg-transparent text-[var(--tds-text-primary)] outline-none placeholder:text-[var(--tds-text-tertiary)]"
+        />
       </div>
 
-      {/* Right actions */}
-      <div className="ml-4 flex items-center gap-2 shrink-0">
-        <button className="flex h-7 items-center gap-1.5 rounded px-2 text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-primary)]">
-          <Search size={14} />
-          <span>종목 검색</span>
-        </button>
-        <button
-          onClick={toggle}
-          className="flex h-7 w-7 items-center justify-center rounded text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]"
-          aria-label="테마 변경"
-        >
-          {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
-        </button>
-      </div>
+      {/* Theme toggle */}
+      <button
+        onClick={toggle}
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-primary)]"
+        aria-label="테마 변경"
+      >
+        {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+      </button>
+
+      {/* Account avatar */}
+      <button className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--tds-surface-overlay)] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-elevated)]">
+        <User size={15} />
+      </button>
     </header>
   );
 }

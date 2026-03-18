@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { ALL_STOCKS, MARKET_INDICES } from "../data/stocks";
+import { ALL_STOCKS, MARKET_INDICES, TICKER_INDICES } from "../data/stocks";
 import type { Candle, OrderBook } from "@/types/stock";
 
 // Simulate price drift on each call
@@ -68,12 +68,21 @@ export const stockHandlers = [
     return HttpResponse.json({ ...ob, symbol: stock.symbol });
   }),
 
-  // GET /api/indices
+  // GET /api/indices  (top-bar nav)
   http.get("/api/indices", () => {
     const indices = MARKET_INDICES.map((idx) => ({
       ...idx,
       value: parseFloat(jitter(idx.value).toFixed(2)),
     }));
     return HttpResponse.json(indices);
+  }),
+
+  // GET /api/ticker  (bottom scrolling bar — financial indices)
+  http.get("/api/ticker", () => {
+    const items = TICKER_INDICES.map((idx) => ({
+      ...idx,
+      value: parseFloat(jitter(idx.value, 0.002).toFixed(2)),
+    }));
+    return HttpResponse.json(items);
   }),
 ];
