@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "motion/react";
+import { motion, useAnimationControls } from "motion/react";
 import { cn, formatChange, getPriceDirection } from "@/lib/utils";
 import type { MarketIndex } from "@/types/stock";
 
@@ -17,11 +18,16 @@ function formatValue(value: number): string {
 }
 
 export function BottomTicker() {
+  const controls = useAnimationControls();
   const { data: items = [] } = useQuery({
     queryKey: ["ticker"],
     queryFn: fetchTicker,
     refetchInterval: 10_000,
   });
+
+  useEffect(() => {
+    if (items.length > 0) controls.start({ x: ["0%", "-50%"] });
+  }, [items.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (items.length === 0) return null;
 
@@ -50,11 +56,15 @@ export function BottomTicker() {
   );
 
   return (
-    <footer className="flex h-7 shrink-0 items-center overflow-hidden border-t border-[var(--tds-border-default)] bg-[var(--tds-surface-elevated)] text-[11px]">
+    <footer
+      className="flex h-7 shrink-0 items-center overflow-hidden border-t border-[var(--tds-border-default)] bg-[var(--tds-surface-elevated)] text-[11px]"
+      onMouseEnter={() => controls.stop()}
+      onMouseLeave={() => controls.start({ x: ["0%", "-50%"] })}
+    >
       <div className="relative flex-1 overflow-hidden">
         <motion.div
           className="flex whitespace-nowrap"
-          animate={{ x: ["0%", "-50%"] }}
+          animate={controls}
           transition={{ duration: 35, ease: "linear", repeat: Infinity }}
         >
           <span className="pr-20">{tickerContent}</span>
