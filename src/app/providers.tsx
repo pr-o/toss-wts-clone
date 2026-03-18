@@ -27,15 +27,11 @@ function ThemeProvider({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-const MOCK_ENABLED = process.env.NEXT_PUBLIC_MOCK === "true" || process.env.NODE_ENV === "development";
-
 export function Providers({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(!MOCK_ENABLED);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (MOCK_ENABLED) {
-      startMSW().then(() => setReady(true));
-    }
+    startMSW().then(() => setReady(true));
   }, []);
 
   if (!ready) return null;
