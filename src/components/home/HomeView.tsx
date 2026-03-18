@@ -35,7 +35,7 @@ export function HomeView() {
       <MarketDataStrip />
 
       {/* ── Constrained: view tabs + filters + list ── */}
-      <div className="flex w-full max-w-4xl flex-col overflow-hidden">
+      <div className="flex w-full max-w-5xl flex-col overflow-hidden">
 
         {/* View tabs */}
         <div className="flex shrink-0 border-b border-[var(--tds-border-default)] px-4">
