@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useAnimationControls } from "motion/react";
 import { useRouter } from "next/navigation";
 import { cn, formatChange, getPriceDirection } from "@/lib/utils";
 import type { MarketIndex } from "@/types/stock";
@@ -19,17 +18,13 @@ function formatValue(value: number): string {
 }
 
 export function BottomTicker() {
-  const controls = useAnimationControls();
+  const [paused, setPaused] = useState(false);
   const router = useRouter();
   const { data: items = [] } = useQuery({
     queryKey: ["ticker"],
     queryFn: fetchTicker,
     refetchInterval: 10_000,
   });
-
-  useEffect(() => {
-    if (items.length > 0) controls.start({ x: ["0%", "-50%"] });
-  }, [items.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (items.length === 0) return null;
 
@@ -65,19 +60,27 @@ export function BottomTicker() {
   return (
     <footer
       className="flex h-7 shrink-0 items-center overflow-hidden border-t border-[var(--tds-border-default)] bg-[var(--tds-surface-elevated)] text-[11px]"
-      onMouseEnter={() => controls.stop()}
-      onMouseLeave={() => controls.start({ x: ["0%", "-50%"] })}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
     >
       <div className="relative flex-1 overflow-hidden">
-        <motion.div
+        <div
           className="flex whitespace-nowrap"
-          animate={controls}
-          transition={{ duration: 35, ease: "linear", repeat: Infinity }}
+          style={{
+            animation: "ticker-scroll 35s linear infinite",
+            animationPlayState: paused ? "paused" : "running",
+          }}
         >
           <span className="pr-20">{tickerContent}</span>
           <span className="pr-20">{tickerContent}</span>
-        </motion.div>
+        </div>
       </div>
+      <style>{`
+        @keyframes ticker-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
     </footer>
   );
 }
