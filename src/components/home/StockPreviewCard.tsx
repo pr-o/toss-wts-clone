@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
 import type { Stock, CommunityPost, NewsHeadline } from "@/types/stock";
+import { MiniChart } from "./MiniChart";
 
 async function fetchStock(symbol: string): Promise<Stock> {
   const res = await fetch(`/api/stocks/${symbol}`); return res.json();
@@ -47,9 +48,9 @@ export function StockPreviewCard({ symbol }: { symbol: string }) {
             </div>
           </div>
         </div>
-        {/* Mini chart placeholder */}
-        <div className="mt-2 h-20 rounded bg-[var(--tds-surface-overlay)] flex items-center justify-center">
-          <span className="text-[10px] text-[var(--tds-text-tertiary)]">일봉 차트</span>
+        {/* Mini chart */}
+        <div className="mt-2 h-56 rounded overflow-hidden">
+          <MiniChart symbol={symbol} direction={dir} />
         </div>
       </div>
 

@@ -15,6 +15,21 @@ async function fetchStocks(): Promise<Stock[]> {
 interface Props {
   focusedSymbol: string;
   onFocus: (symbol: string) => void;
+  marketFilter?: string;
+  sortBy?: string;
+  timeFrame?: string;
+}
+
+/** Deterministic mock period return — seeded from symbol so it's stable across re-renders */
+function getPeriodChangeRate(stock: Stock, period: string): number {
+  if (period === "실시간" || period === "1일") return stock.changeRate;
+  const scaleMap: Record<string, number> = { "1주일": 3.5, "1개월": 9, "3개월": 17, "6개월": 26, "1년": 42 };
+  const scale = scaleMap[period] ?? 1;
+  const hash = stock.symbol.split("").reduce((acc, c) => (acc * 31 + c.charCodeAt(0)) & 0xffff, 0);
+  const fraction = (hash % 1000) / 1000;           // 0.000 – 0.999
+  const baseDir = stock.changeRate >= 0 ? 1 : -1;
+  const dir = (hash % 10) < 7 ? baseDir : -baseDir; // 70 % follows current trend
+  return parseFloat((dir * fraction * scale).toFixed(2));
 }
 
 function StockAvatar({ stock }: { stock: Stock }) {
@@ -29,14 +44,30 @@ function StockAvatar({ stock }: { stock: Stock }) {
   );
 }
 
-export function StockRankList({ focusedSymbol, onFocus }: Props) {
+export function StockRankList({ focusedSymbol, onFocus, marketFilter = "전체", sortBy = "토스증권 거래대금", timeFrame = "실시간" }: Props) {
   const router = useRouter();
   const { has, add, remove } = useWatchlistStore();
   const { data: stocks = [] } = useQuery({ queryKey: ["stocks"], queryFn: fetchStocks, refetchInterval: 5_000 });
 
-  const ranked = [...stocks]
+  const displayChangeRate = (s: Stock) => getPeriodChangeRate(s, timeFrame);
+
+  const filtered = stocks
     .filter((s) => s.rank !== undefined)
-    .sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99));
+    .filter((s) => {
+      if (marketFilter === "국내") return s.market === "KRX" || s.market === "KOSDAQ";
+      if (marketFilter === "해외") return s.market === "NASDAQ" || s.market === "NYSE";
+      return true;
+    });
+
+  const ranked = [...filtered].sort((a, b) => {
+    if (sortBy === "토스증권 거래대금" || sortBy === "거래대금") return (b.tradeVolumeBillion ?? 0) - (a.tradeVolumeBillion ?? 0);
+    if (sortBy === "토스증권 거래량"   || sortBy === "거래량")   return b.volume - a.volume;
+    if (sortBy === "급상승") return displayChangeRate(b) - displayChangeRate(a);
+    if (sortBy === "급하락") return displayChangeRate(a) - displayChangeRate(b);
+    return (a.rank ?? 99) - (b.rank ?? 99);
+  });
+
+  const changeRateLabel = timeFrame === "실시간" || timeFrame === "1일" ? "등락률" : `${timeFrame} 수익률`;
 
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -50,7 +81,7 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
         <span />
         <span>종목명</span>
         <span className="text-right">현재가</span>
-        <span className="text-right">등락률</span>
+        <span className="text-right">{changeRateLabel}</span>
         <span className="text-right">거래대금 순</span>
         <span className="text-center">토스증권 거래 비율 ⓘ</span>
       </div>
@@ -59,8 +90,9 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
         <div className="px-3 py-1 text-[10px] text-[var(--tds-text-tertiary)]">
           순위 · 오늘 {timeStr} 기준
         </div>
-        {ranked.map((stock) => {
-          const dir = getPriceDirection(stock.changeRate);
+        {ranked.map((stock, idx) => {
+          const cr  = displayChangeRate(stock);
+          const dir = getPriceDirection(cr);
           const watched = has(stock.symbol);
           const isFocused = stock.symbol === focusedSymbol;
           const buyRatio = stock.buyRatio ?? 50;
@@ -85,7 +117,7 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
               </button>
 
               {/* Rank */}
-              <span className="font-medium text-[var(--tds-text-secondary)]">{stock.rank}</span>
+              <span className="font-medium text-[var(--tds-text-secondary)]">{idx + 1}</span>
 
               {/* Avatar */}
               <StockAvatar stock={stock} />
@@ -108,7 +140,7 @@ export function StockRankList({ focusedSymbol, onFocus }: Props) {
                   dir === "fall" ? "bg-blue-100 text-[var(--tds-text-fall)] dark:bg-blue-950/40" :
                   "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-tertiary)]"
                 )}>
-                  {stock.changeRate > 0 ? "+" : ""}{stock.changeRate.toFixed(2)}%
+                  {cr > 0 ? "+" : ""}{cr.toFixed(2)}%
                 </span>
               </div>
 

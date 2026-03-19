@@ -57,8 +57,8 @@ export function HomeView() {
             </Tabs>
           </div>
 
-          {/* Filter chip row */}
-          <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--tds-border-default)] px-4 py-1.5 scrollbar-none">
+          {/* Filter chip row — only shown for the stock list view */}
+          <div className={`flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--tds-border-default)] px-4 py-1.5 scrollbar-none ${viewTab !== "실시간 차트" ? "hidden" : ""}`}>
 
             {/* Market tabs — segmented control */}
             <Tabs value={marketTab} onValueChange={setMarketTab} className="shrink-0 flex-row gap-0 mr-2">
@@ -109,7 +109,19 @@ export function HomeView() {
             </button>
           </div>
 
-          <StockRankList onFocus={setFocusedSymbol} focusedSymbol={focusedSymbol} />
+          {viewTab === "실시간 차트" ? (
+            <StockRankList
+              onFocus={setFocusedSymbol}
+              focusedSymbol={focusedSymbol}
+              marketFilter={marketTab}
+              sortBy={sortTab}
+              timeFrame={timeTab}
+            />
+          ) : (
+            <div className="flex flex-1 items-center justify-center text-sm text-[var(--tds-text-tertiary)]">
+              {viewTab}
+            </div>
+          )}
         </div>
 
         {/* Stock preview + community column */}

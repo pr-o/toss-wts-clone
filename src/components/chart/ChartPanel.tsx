@@ -33,6 +33,9 @@ export function ChartPanel({ symbol }: ChartPanelProps) {
   const { data: candles } = useQuery({
     queryKey: ["candles", symbol],
     queryFn: () => fetchCandles(symbol),
+    staleTime: Infinity,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
   });
 
   // Initialize chart

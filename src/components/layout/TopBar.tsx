@@ -2,36 +2,38 @@
 
 import { Moon, Sun, Search, User } from "lucide-react";
 import { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useThemeStore } from "@/stores/themeStore";
 import { cn } from "@/lib/utils";
 
 const NAV_TABS = [
-  { id: "home",         label: "홈" },
-  { id: "feed",         label: "피드" },
-  { id: "stock-picker", label: "주식 골라보기" },
-  { id: "account",      label: "내 계좌" },
+  { id: "home",         label: "홈",           href: "/" },
+  { id: "feed",         label: "피드",          href: "/feed" },
+  { id: "stock-picker", label: "주식 골라보기",  href: "/stock-picker" },
+  { id: "account",      label: "내 계좌",        href: "/account" },
 ] as const;
-
-type TabId = (typeof NAV_TABS)[number]["id"];
 
 export function TopBar() {
   const { theme, toggle } = useThemeStore();
-  const [activeTab, setActiveTab] = useState<TabId>("home");
+  const router   = useRouter();
+  const pathname = usePathname();
   const [searchFocused, setSearchFocused] = useState(false);
+
+  const activeTab = NAV_TABS.find((t) => t.href === pathname)?.id ?? "home";
 
   return (
     <header className="flex h-11 shrink-0 items-center gap-0 border-b border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-4">
       {/* Logo */}
-      <div className="mr-6 flex shrink-0 items-center gap-1">
+      <button onClick={() => router.push("/")} className="mr-6 flex shrink-0 items-center gap-1 hover:opacity-80">
         <span className="text-sm font-bold text-[var(--tds-text-brand)]">토스증권</span>
-      </div>
+      </button>
 
       {/* Horizontal nav tabs */}
       <nav className="flex items-center gap-1">
-        {NAV_TABS.map(({ id, label }) => (
+        {NAV_TABS.map(({ id, label, href }) => (
           <button
             key={id}
-            onClick={() => setActiveTab(id)}
+            onClick={() => router.push(href)}
             className={cn(
               "relative rounded px-3 py-1.5 text-sm transition-colors",
               activeTab === id
