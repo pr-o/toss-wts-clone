@@ -1,10 +1,5 @@
-import { WTSShell } from "@/components/layout/WTSShell";
-import { ScreenerView } from "@/components/screener/ScreenerView";
+import { redirect } from "next/navigation";
 
 export default function ScreenerPage() {
-  return (
-    <WTSShell>
-      <ScreenerView />
-    </WTSShell>
-  );
+  redirect("/screener/1");
 }
