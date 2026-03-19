@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { id: "home",         label: "홈",           icon: Home,       href: "/" },
   { id: "news",         label: "뉴스",          icon: Newspaper,  href: "/news" },
-  { id: "stock-picker", label: "주식 골라보기",  icon: Filter,     href: "/stock-picker" },
+  { id: "stock-picker", label: "주식 골라보기",  icon: Filter,     href: "/screener" },
   { id: "account",      label: "내 계좌",        icon: Wallet,     href: "/account" },
   { id: "search",       label: "종목 검색",      icon: Search,     href: "/search" },
 ] as const;

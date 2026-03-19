@@ -7,10 +7,10 @@ import { useThemeStore } from "@/stores/themeStore";
 import { cn } from "@/lib/utils";
 
 const NAV_TABS = [
-  { id: "home",         label: "홈",           href: "/" },
-  { id: "feed",         label: "피드",          href: "/feed" },
-  { id: "stock-picker", label: "주식 골라보기",  href: "/stock-picker" },
-  { id: "account",      label: "내 계좌",        href: "/account" },
+  { id: "home",     label: "홈",           href: "/",                 match: (p: string) => p === "/",                  disabled: false },
+  { id: "feed",     label: "피드",          href: "/feed/recommended", match: (p: string) => p.startsWith("/feed"),       disabled: false },
+  { id: "screener", label: "주식 골라보기",  href: "/screener",         match: (p: string) => p.startsWith("/screener"),  disabled: false },
+  { id: "account",  label: "내 계좌",        href: "/account",          match: (p: string) => p.startsWith("/account"),   disabled: true  },
 ] as const;
 
 export function TopBar() {
@@ -19,7 +19,7 @@ export function TopBar() {
   const pathname = usePathname();
   const [searchFocused, setSearchFocused] = useState(false);
 
-  const activeTab = NAV_TABS.find((t) => t.href === pathname)?.id ?? "home";
+  const activeTab = NAV_TABS.find((t) => t.match(pathname))?.id ?? "home";
 
   return (
     <header className="flex h-11 shrink-0 items-center gap-0 border-b border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-4">
@@ -30,19 +30,22 @@ export function TopBar() {
 
       {/* Horizontal nav tabs */}
       <nav className="flex items-center gap-1">
-        {NAV_TABS.map(({ id, label, href }) => (
+        {NAV_TABS.map(({ id, label, href, disabled }) => (
           <button
             key={id}
+            disabled={disabled}
             onClick={() => router.push(href)}
             className={cn(
               "relative rounded px-3 py-1.5 text-sm transition-colors",
-              activeTab === id
+              disabled
+                ? "cursor-not-allowed text-[var(--tds-text-tertiary)] opacity-40"
+                : activeTab === id
                 ? "font-semibold text-[var(--tds-text-primary)]"
                 : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
             )}
           >
             {label}
-            {activeTab === id && (
+            {activeTab === id && !disabled && (
               <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[var(--tds-text-brand)]" />
             )}
           </button>
