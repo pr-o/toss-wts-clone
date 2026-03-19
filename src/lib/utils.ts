@@ -22,3 +22,4 @@ export function getPriceDirection(change: number): "rise" | "fall" | "flat" {
   if (change < 0) return "fall";
   return "flat";
 }
+

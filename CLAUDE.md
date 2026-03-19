@@ -29,7 +29,7 @@ pnpm msw:init     # re-copy the MSW service worker to public/ if it goes missing
 | Server state | TanStack Query 5 (5 s stale / 5 s poll interval) |
 | Charts | `lightweight-charts` v5 (TradingView open-source) |
 | Icons | Lucide React |
-| Primitives | Radix UI |
+| UI components | shadcn/ui (base-ui primitives) |
 | Package manager | pnpm |
 
 ## Architecture
@@ -58,14 +58,28 @@ Mirrors the real Toss WTS panel engine described at `toss.tech/article/frontend-
 | `stores/panelStore.ts` | Panel tree + `activeSymbol` — persisted |
 | `stores/watchlistStore.ts` | Array of watched symbols — persisted |
 
+### UI components — shadcn/ui + TDS tokens
+shadcn/ui components live in `src/components/ui/`. They are built on base-ui primitives and styled with class-variance-authority. **Always prefer shadcn components** (e.g. `Tabs`, `Button`, `Select`) over hand-rolled HTML elements.
+
+When using shadcn components, **override their colors with TDS tokens** rather than shadcn's default design tokens (`--background`, `--foreground`, `--primary`, etc.). Pass custom `className` props to override the defaults.
+
+```tsx
+// Correct — TDS tokens on a shadcn component
+<TabsTrigger className="data-active:text-[var(--tds-text-primary)] data-active:bg-[var(--tds-surface-base)]" />
+
+// Wrong — raw Tailwind colors
+<TabsTrigger className="data-active:text-gray-900 data-active:bg-white" />
+```
+
 ### TDS color system
-`src/app/globals.css` defines all CSS custom properties in OKLCH (matching Toss's real color pipeline). Always use `var(--tds-*)` tokens rather than raw Tailwind color utilities when implementing UI.
+`src/app/globals.css` defines all CSS custom properties in OKLCH (matching Toss's real color pipeline). **Always use `var(--tds-*)` tokens** rather than raw Tailwind color utilities or shadcn's default tokens when implementing UI.
 
 Key tokens:
 - `--tds-text-rise` / `--tds-text-fall` — Korean convention: **red = rising, blue = falling**
 - `--tds-surface-base / elevated / overlay / sidebar` — layered surface hierarchy
 - `--tds-border-default / strong`
 - `--tds-text-primary / secondary / tertiary / brand`
+- `--tds-fill-brand` — primary brand fill (blue)
 
 Theme is toggled by setting `data-theme="dark"` on `<html>`.
 
