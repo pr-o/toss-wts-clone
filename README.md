@@ -20,8 +20,8 @@ A pixel-faithful clone of [Toss Securities WTS](https://wts.tossinvest.com/) (We
 - Zustand 5 + persist (전역 상태 — 테마, 패널 레이아웃, 관심종목)
 - lightweight-charts v5 (TradingView 오픈소스 캔들스틱 차트)
 - motion (Framer Motion — 하단 티커 스크롤 애니메이션)
+- shadcn/ui (UI 컴포넌트 — base-ui 프리미티브 기반)
 - Lucide React (아이콘)
-- Radix UI (UI 프리미티브)
 
 ## 앱 흐름
 
@@ -54,7 +54,9 @@ root: split(H, 0.70)
   right: 주문폼 (full height)
 ```
 
-## TDS 컬러 시스템
+## UI 컴포넌트 & TDS 컬러 시스템
+
+UI 컴포넌트는 shadcn/ui(`src/components/ui/`)를 기반으로 한다. 단, 컬러는 shadcn 기본 토큰(`--background`, `--primary` 등) 대신 **TDS 토큰(`var(--tds-*)`)**으로 오버라이드한다.
 
 `src/app/globals.css`에 OKLCH 기반 CSS 커스텀 프로퍼티로 정의. `data-theme="dark"` 속성으로 다크 테마 전환.
 
@@ -79,8 +81,8 @@ Reverse-engineered from `wts.tossinvest.com`, this app replicates the full WTS i
 - Zustand 5 + persist (global state — theme, panel layout, watchlist)
 - lightweight-charts v5 (TradingView open-source candlestick charts)
 - motion (Framer Motion — bottom ticker scroll animation)
+- shadcn/ui (UI components — base-ui primitives)
 - Lucide React (icons)
-- Radix UI (UI primitives)
 
 ## App Flow
 
@@ -100,6 +102,15 @@ Reverse-engineered from `wts.tossinvest.com`, this app replicates the full WTS i
 
 - **Home**: `[ Stock ranking list 820px | Community preview flex-1 ]`
 - **Stock detail**: `[ StockHeader ] [ PanelManager — binary tree panels ]`
+
+## UI Components & TDS Color System
+
+UI components are built on shadcn/ui (`src/components/ui/`). shadcn's default design tokens (`--background`, `--primary`, etc.) are **not used** — all colors are overridden with TDS tokens (`var(--tds-*)`) to match the Toss design language.
+
+- `--tds-text-rise` / `--tds-text-fall` — Korean convention: **red = rising, blue = falling**
+- `--tds-surface-base / elevated / overlay / sidebar` — layered surface hierarchy
+- `--tds-fill-brand` — primary brand blue
+- All tokens defined in OKLCH in `src/app/globals.css`; dark theme via `data-theme="dark"` on `<html>`
 
 ## Panel System
 
