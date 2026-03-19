@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { StockRankList } from "./StockRankList";
 import { MarketDataStrip } from "./MarketDataStrip";
+import { StockPreviewCard } from "./StockPreviewCard";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const VIEW_TABS   = ["실시간 차트", "지금 뜨는 카테고리", "국내 투자자 동향"] as const;
@@ -112,61 +113,8 @@ export function HomeView() {
         </div>
 
         {/* Stock preview + community column */}
-        <div className="flex flex-1 flex-col overflow-y-auto bg-[var(--tds-surface-base)] text-xs">
-
-          {/* Stock preview card */}
-          <div className="shrink-0 border-b border-[var(--tds-border-default)] p-4">
-            <div className="mb-3 flex items-center gap-2">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--tds-surface-overlay)] text-[11px] font-bold text-[var(--tds-text-primary)]">S</div>
-              <div>
-                <div className="font-semibold text-[var(--tds-text-primary)]">SK하이닉스</div>
-                <div className="tabular-nums text-[var(--tds-text-rise)]">178,205원 +8.96%</div>
-              </div>
-            </div>
-            {/* Mini chart placeholder */}
-            <div className="flex h-28 w-full items-center justify-center rounded-lg bg-[var(--tds-surface-overlay)]">
-              <span className="text-[10px] text-[var(--tds-text-tertiary)]">미니 차트</span>
-            </div>
-          </div>
-
-          {/* 한 줄 요약 */}
-          <div className="shrink-0 border-b border-[var(--tds-border-default)] px-4 py-3">
-            <div className="mb-2 font-semibold text-[var(--tds-text-primary)]">한 줄 요약</div>
-            {["SK하이닉스 영업실적 발표: 2025년 연간 영업이익 47조 2,063억원, 2026년까지 10% 증가", "유가증권 기업들의 이번 달 Top 10 종목에요"].map((text, i) => (
-              <div key={i} className="mb-2 flex items-start gap-2">
-                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--tds-surface-overlay)] text-[9px] font-bold text-[var(--tds-text-secondary)]">소</div>
-                <div>
-                  <p className="leading-relaxed text-[var(--tds-text-primary)]">{text}</p>
-                  <span className="text-[10px] text-[var(--tds-text-tertiary)]">1일 전</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 커뮤니티 */}
-          <div className="flex-1 px-4 py-3">
-            <div className="mb-2 font-semibold text-[var(--tds-text-primary)]">커뮤니티</div>
-            {[
-              { name: "재테크고수투자자", time: "1분", color: "#3b82f6", content: "SK하이닉스 CXL 출하량 절반 수준 됩니다. 물론 여기에 들어가는 HBM 비중이 높아 2030년까지 지속 성장할 전망" },
-              { name: "SK그룹 최대주주 출신", time: "5분", color: "#8b5cf6", content: "SK그룹 최대주주 출신으로서 SK하이닉스의 성장 가능성은 아직도 충분합니다" },
-              { name: "고수투자자", time: "12분", color: "#10b981", content: "반도체 사이클 바닥 신호 포착됨. 지금이 저점 매수 타이밍" },
-              { name: "주식왕", time: "18분", color: "#f59e0b", content: "5년 10배 간다. 이건 확실함" },
-            ].map((post, i) => (
-              <div key={i} className="mb-3 flex items-start gap-2">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: post.color }}>
-                  {post.name[0]}
-                </div>
-                <div className="min-w-0">
-                  <div className="mb-0.5 flex items-center gap-1.5">
-                    <span className="font-semibold text-[var(--tds-text-primary)]">{post.name}</span>
-                    <span className="text-[10px] text-[var(--tds-text-tertiary)]">{post.time}</span>
-                  </div>
-                  <p className="leading-relaxed text-[var(--tds-text-secondary)]">{post.content}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
+        <div className="flex flex-1 flex-col overflow-y-auto bg-[var(--tds-surface-base)]">
+          <StockPreviewCard symbol={focusedSymbol} />
         </div>
 
       </div>
