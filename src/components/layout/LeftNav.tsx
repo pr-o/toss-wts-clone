@@ -3,6 +3,8 @@
 import { Home, Newspaper, Filter, Wallet, Search } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 const NAV_ITEMS = [
   { id: "home",         label: "홈",           icon: Home,       href: "/" },
@@ -20,20 +22,24 @@ export function LeftNav() {
   return (
     <nav className="flex w-14 flex-col items-center gap-1 border-r border-[var(--tds-border-default)] bg-[var(--tds-surface-sidebar)] py-3">
       {NAV_ITEMS.map(({ id, label, icon: Icon, href }) => (
-        <button
-          key={id}
-          onClick={() => router.push(href)}
-          className={cn(
-            "flex w-10 flex-col items-center gap-0.5 rounded-lg py-2 text-[10px] transition-colors",
-            active === id
-              ? "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-brand)]"
-              : "text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-secondary)]"
-          )}
-          title={label}
-        >
-          <Icon size={16} />
-          <span className="leading-none">{label.length > 4 ? "" : label}</span>
-        </button>
+        <Tooltip key={id}>
+          <TooltipTrigger render={
+            <Button
+              variant="ghost"
+              onClick={() => router.push(href)}
+              className={cn(
+                "flex h-auto w-10 flex-col items-center gap-0.5 rounded-lg py-2 text-[10px] transition-colors",
+                active === id
+                  ? "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-brand)]"
+                  : "text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-secondary)]"
+              )}
+            >
+              <Icon size={16} />
+              <span className="leading-none">{label.length > 4 ? "" : label}</span>
+            </Button>
+          } />
+          <TooltipContent side="right">{label}</TooltipContent>
+        </Tooltip>
       ))}
     </nav>
   );

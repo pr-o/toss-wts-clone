@@ -7,6 +7,9 @@ import { usePanelStore } from "@/stores/panelStore";
 import { useWatchlistStore } from "@/stores/watchlistStore";
 import { cn, formatChange, formatPrice, getPriceDirection } from "@/lib/utils";
 import type { Stock } from "@/types/stock";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 async function fetchStock(symbol: string): Promise<Stock> {
   const res = await fetch(`/api/stocks/${symbol}`);
@@ -59,9 +62,12 @@ export function StockHeader({ symbol: symbolProp }: { symbol?: string }) {
         {/* Left: name + price */}
         <div>
           <div className="mb-1 flex items-center gap-2">
-            <span className="rounded bg-[var(--tds-surface-overlay)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--tds-text-secondary)]">
+            <Badge
+              variant="secondary"
+              className="rounded bg-[var(--tds-surface-overlay)] px-1.5 py-0.5 text-[10px] font-medium text-[var(--tds-text-secondary)]"
+            >
               {stock.market}
-            </span>
+            </Badge>
             <span className="text-sm font-semibold text-[var(--tds-text-primary)]">{stock.name}</span>
             <span className="text-xs text-[var(--tds-text-tertiary)]">{stock.symbol}</span>
           </div>
@@ -89,47 +95,54 @@ export function StockHeader({ symbol: symbolProp }: { symbol?: string }) {
           </div>
           {/* Watchlist + heart */}
           <div className="flex items-center gap-1">
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={() => isWatched ? remove(symbol) : add(symbol)}
               className={cn(
-                "flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-[var(--tds-surface-overlay)]",
+                "rounded-full transition-colors hover:bg-[var(--tds-surface-overlay)]",
                 isWatched ? "text-yellow-400" : "text-[var(--tds-text-tertiary)]"
               )}
             >
               <Star size={15} fill={isWatched ? "currentColor" : "none"} />
-            </button>
-            <button className="flex h-7 w-7 items-center justify-center rounded-full text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)]">
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="rounded-full text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)]"
+            >
               <Heart size={15} />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Tab row */}
       <div className="flex items-center justify-between border-t border-[var(--tds-border-default)] px-4">
-        <div className="flex">
-          {DETAIL_TABS.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              className={cn(
-                "relative px-3 py-2 text-xs transition-colors",
-                activeTab === id
-                  ? "font-semibold text-[var(--tds-text-primary)]"
-                  : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-              )}
-            >
-              {label}
-              {activeTab === id && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--tds-text-primary)]" />
-              )}
-            </button>
-          ))}
-        </div>
-        <button className="flex items-center gap-1 rounded px-2 py-1 text-[11px] text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-secondary)]">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DetailTabId)}>
+          <TabsList
+            variant="line"
+            className="h-auto gap-0 rounded-none bg-transparent p-0"
+          >
+            {DETAIL_TABS.map(({ id, label }) => (
+              <TabsTrigger
+                key={id}
+                value={id}
+                className="relative h-auto rounded-none px-3 py-2 text-xs transition-colors data-active:font-semibold data-active:text-[var(--tds-text-primary)] data-active:shadow-none data-active:bg-transparent after:bg-[var(--tds-text-primary)]"
+              >
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1 text-[11px] text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-secondary)]"
+        >
           <LayoutPanelLeft size={12} />
           <span>화면 편집</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

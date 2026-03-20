@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
 import type { CommunityPost } from "@/types/stock";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 async function fetchPosts(symbol: string): Promise<CommunityPost[]> {
   const res = await fetch(`/api/community/${symbol}`);
@@ -21,15 +23,25 @@ export function CommunityPanel({ symbol }: { symbol: string }) {
       <div className="flex shrink-0 items-center justify-between border-b border-[var(--tds-border-default)] px-3 py-2">
         <span className="font-medium text-[var(--tds-text-primary)]">커뮤니티</span>
         <div className="flex items-center gap-2">
-          <button className="flex items-center gap-0.5 text-[10px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
+          <Button
+            variant="ghost"
+            size="xs"
+            className="gap-0.5 text-[10px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+          >
             인기순 <ChevronDown size={11} />
-          </button>
-          <button className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">✕</button>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+          >
+            ✕
+          </Button>
         </div>
       </div>
 
       {/* Posts */}
-      <div className="flex-1 overflow-y-auto">
+      <ScrollArea className="flex-1">
         {posts.length === 0 ? (
           <div className="flex h-full items-center justify-center text-[var(--tds-text-tertiary)]">
             커뮤니티 게시글이 없어요
@@ -55,10 +67,13 @@ export function CommunityPanel({ symbol }: { symbol: string }) {
             </div>
           ))
         )}
-        <button className="w-full py-2 text-center text-[10px] text-[var(--tds-text-brand)] hover:underline">
+        <Button
+          variant="ghost"
+          className="w-full py-2 text-center text-[10px] text-[var(--tds-text-brand)] hover:underline"
+        >
           전체 보기 &gt;
-        </button>
-      </div>
+        </Button>
+      </ScrollArea>
     </div>
   );
 }

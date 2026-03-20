@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const TABS = [
   { label: "추천", href: "/feed/recommended" },
@@ -17,18 +18,19 @@ export function FeedSubNav() {
       {TABS.map(({ label, href }) => {
         const active = pathname.startsWith(href.split("/").slice(0, 3).join("/"));
         return (
-          <button
+          <Button
             key={label}
+            variant="ghost"
             onClick={() => router.push(href)}
             className={cn(
-              "w-full py-2 text-[11px] font-medium transition-colors",
+              "h-auto w-full rounded-none py-2 text-[11px] font-medium transition-colors",
               active
                 ? "font-semibold text-[var(--tds-text-primary)]"
                 : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]",
             )}
           >
             {label}
-          </button>
+          </Button>
         );
       })}
     </div>

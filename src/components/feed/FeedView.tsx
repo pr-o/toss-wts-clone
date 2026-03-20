@@ -4,6 +4,10 @@ import { useState } from "react";
 import { Heart, MessageCircle, Share2, PenLine, ChevronDown } from "lucide-react";
 import { FeedSubNav } from "./FeedSubNav";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // ── Mock data ──────────────────────────────────────────────────────────────
 
@@ -188,7 +192,13 @@ function PostCard({ post }: { post: Post }) {
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[13px] font-semibold text-[var(--tds-text-primary)]">{post.author.name}</span>
             {post.author.badges.map((b) => (
-              <span key={b} className="rounded-full bg-[var(--tds-surface-overlay)] px-1.5 py-0.5 text-[10px] text-[var(--tds-text-secondary)]">{b}</span>
+              <Badge
+                key={b}
+                variant="secondary"
+                className="rounded-full bg-[var(--tds-surface-overlay)] px-1.5 py-0.5 text-[10px] text-[var(--tds-text-secondary)]"
+              >
+                {b}
+              </Badge>
             ))}
           </div>
           <div className="text-[10px] text-[var(--tds-text-tertiary)]">
@@ -208,20 +218,22 @@ function PostCard({ post }: { post: Post }) {
 
       {/* Actions */}
       <div className="mt-3 flex items-center gap-4">
-        <button
+        <Button
+          variant="ghost"
+          size="xs"
           onClick={() => { setLiked((p) => !p); setLikes((n) => n + (liked ? -1 : 1)); }}
-          className={cn("flex items-center gap-1 text-[11px] transition-colors", liked ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]")}
+          className={cn("gap-1 text-[11px] transition-colors", liked ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]")}
         >
           <Heart size={13} fill={liked ? "currentColor" : "none"} />
           {likes}
-        </button>
-        <button className="flex items-center gap-1 text-[11px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
+        </Button>
+        <Button variant="ghost" size="xs" className="gap-1 text-[11px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
           <MessageCircle size={13} />
           {post.comments}
-        </button>
-        <button className="flex items-center gap-1 text-[11px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
+        </Button>
+        <Button variant="ghost" size="xs" className="gap-1 text-[11px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
           <Share2 size={13} />
-        </button>
+        </Button>
       </div>
     </article>
   );
@@ -244,28 +256,27 @@ export function FeedView() {
           <div className="flex-1 rounded-lg bg-[var(--tds-surface-overlay)] px-3 py-2 text-[12px] text-[var(--tds-text-tertiary)] cursor-text">
             투자 이야기가 없나 이웃들은?
           </div>
-          <button className="flex shrink-0 items-center gap-1 rounded-lg bg-[var(--tds-fill-brand)] px-3 py-1.5 text-[12px] font-medium text-white">
+          <Button className="shrink-0 gap-1 rounded-lg bg-[var(--tds-fill-brand)] px-3 py-1.5 text-[12px] font-medium text-white">
             <PenLine size={12} />
             글쓰기
-          </button>
+          </Button>
         </div>
 
         {/* Posts */}
-        <div className="flex-1 overflow-y-auto">
+        <ScrollArea className="flex-1">
           {POSTS.map((post) => <PostCard key={post.id} post={post} />)}
-        </div>
+        </ScrollArea>
       </div>
 
       {/* ── Right panel ──────────────────────────────────────────────── */}
-      <div className="flex w-52 shrink-0 flex-col overflow-y-auto border-l border-[var(--tds-border-default)] bg-[var(--tds-surface-base)]">
-
+      <ScrollArea className="flex w-52 shrink-0 flex-col border-l border-[var(--tds-border-default)] bg-[var(--tds-surface-base)]">
         {/* Weekly rankings */}
         <div className="p-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-[12px] font-semibold text-[var(--tds-text-primary)]">주간 프로필 랭킹</span>
-            <button className="flex items-center gap-0.5 text-[10px] text-[var(--tds-text-tertiary)]">
+            <Button variant="ghost" size="xs" className="gap-0.5 text-[10px] text-[var(--tds-text-tertiary)]">
               기간 <ChevronDown size={10} />
-            </button>
+            </Button>
           </div>
           <div className="flex flex-col gap-2">
             {WEEKLY_RANKINGS.map((u) => (
@@ -285,13 +296,13 @@ export function FeedView() {
           </div>
         </div>
 
-        <div className="mx-4 border-t border-[var(--tds-border-default)]" />
+        <Separator className="mx-4 bg-[var(--tds-border-default)]" />
 
         {/* Notable themes */}
         <div className="p-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-[12px] font-semibold text-[var(--tds-text-primary)]">주목할 만한 테마</span>
-            <button className="text-[10px] text-[var(--tds-text-tertiary)]">더보기 &gt;</button>
+            <Button variant="ghost" size="xs" className="text-[10px] text-[var(--tds-text-tertiary)]">더보기 &gt;</Button>
           </div>
           <div className="flex flex-col gap-2">
             {THEMES.map((t) => (
@@ -302,7 +313,7 @@ export function FeedView() {
             ))}
           </div>
         </div>
-      </div>
+      </ScrollArea>
 
     </div>
   );

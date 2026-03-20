@@ -5,6 +5,19 @@ import { useRouter } from "next/navigation";
 import { Search, X, ChevronDown, ChevronUp, ChevronsUpDown, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STRATEGIES, STRATEGY_STOCKS } from "./screenerData";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type SortKey = "price" | "changeRate" | "volume" | "marketCap" | "tossTraders" | "monthReturn";
 
@@ -67,30 +80,31 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
     <div className="flex flex-1 overflow-hidden">
 
       {/* ── Left sidebar ─────────────────────────────────────────────── */}
-      <div className="flex w-44 shrink-0 flex-col overflow-y-auto border-r border-[var(--tds-border-default)] bg-[var(--tds-surface-base)]">
+      <ScrollArea className="flex w-44 shrink-0 flex-col border-r border-[var(--tds-border-default)] bg-[var(--tds-surface-base)]">
         <div className="px-4 py-3 text-[13px] font-bold text-[var(--tds-text-primary)]">주식 골라보기 목록</div>
 
         <div className="px-4 pb-1 text-[10px] font-medium text-[var(--tds-text-tertiary)]">나의 전략</div>
         <div className="mb-1 px-4 py-1.5 text-[11px] text-[var(--tds-text-tertiary)]">저장된 전략이 없어요</div>
 
-        <div className="mx-4 mb-2 border-t border-[var(--tds-border-default)]" />
+        <Separator className="mx-4 mb-2 bg-[var(--tds-border-default)]" />
         <div className="px-4 pb-1 text-[10px] font-medium text-[var(--tds-text-tertiary)]">스크리너 전략</div>
 
         {STRATEGIES.map((s) => (
-          <button
+          <Button
             key={s.id}
+            variant="ghost"
             onClick={() => router.push(`/screener/${s.id}`)}
             className={cn(
-              "w-full px-4 py-2 text-left text-[12px] transition-colors",
+              "h-auto w-full justify-start px-4 py-2 text-left text-[12px] transition-colors rounded-none",
               strategyId === s.id
                 ? "bg-[var(--tds-surface-overlay)] font-semibold text-[var(--tds-text-primary)]"
                 : "text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-elevated)] hover:text-[var(--tds-text-primary)]",
             )}
           >
             {s.label}
-          </button>
+          </Button>
         ))}
-      </div>
+      </ScrollArea>
 
       {/* ── Main content ─────────────────────────────────────────────── */}
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -106,38 +120,49 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
           <span className="text-[11px] text-[var(--tds-text-tertiary)]">결과 {filtered.length}↑</span>
           <div className="flex h-7 items-center gap-1.5 rounded-lg border border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)] px-2">
             <Search size={11} className="text-[var(--tds-text-tertiary)]" />
-            <input
+            <Input
               value={symbolSearch}
               onChange={(e) => setSymbolSearch(e.target.value)}
               placeholder="심볼"
-              className="w-16 bg-transparent text-[11px] text-[var(--tds-text-primary)] outline-none placeholder:text-[var(--tds-text-tertiary)]"
+              className="h-auto w-16 border-0 bg-transparent p-0 text-[11px] text-[var(--tds-text-primary)] shadow-none outline-none placeholder:text-[var(--tds-text-tertiary)] focus-visible:ring-0"
             />
           </div>
           {[["국가", "미국"], ["시간표", "1일"], ["카테고리", "전체"]].map(([label, val]) => (
-            <button key={label} className="flex h-7 items-center gap-1 rounded-lg border border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)] px-2.5 text-[11px] text-[var(--tds-text-secondary)]">
+            <Button
+              key={label}
+              variant="ghost"
+              size="xs"
+              className="h-7 gap-1 rounded-lg border border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)] px-2.5 text-[11px] text-[var(--tds-text-secondary)]"
+            >
               {label}: {val} <ChevronDown size={10} />
-            </button>
+            </Button>
           ))}
-          <button className="flex h-7 items-center gap-1 rounded-lg border border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)] px-2.5 text-[11px] text-[var(--tds-text-secondary)]">
+          <Button
+            variant="ghost"
+            size="xs"
+            className="h-7 gap-1 rounded-lg border border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)] px-2.5 text-[11px] text-[var(--tds-text-secondary)]"
+          >
             <SlidersHorizontal size={11} /> 주요지표 1달 %: 1개 선택 <ChevronDown size={10} />
-          </button>
+          </Button>
           {symbolSearch && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={() => setSymbolSearch("")}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--tds-border-default)] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-primary)]"
+              className="h-7 w-7 rounded-lg border border-[var(--tds-border-default)] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-primary)]"
             >
               <X size={12} />
-            </button>
+            </Button>
           )}
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
-          <table className="w-full min-w-[900px] border-collapse text-[12px]">
-            <thead className="sticky top-0 z-10 bg-[var(--tds-surface-base)]">
-              <tr className="border-b border-[var(--tds-border-default)] text-[10px] text-[var(--tds-text-tertiary)]">
-                <th className="w-8 px-3 py-2 text-center font-medium">#</th>
-                <th className="px-3 py-2 text-left font-medium">이름</th>
+        <ScrollArea className="flex-1">
+          <Table className="min-w-[900px] border-collapse text-[12px]">
+            <TableHeader className="sticky top-0 z-10 bg-[var(--tds-surface-base)]">
+              <TableRow className="border-b border-[var(--tds-border-default)] text-[10px] text-[var(--tds-text-tertiary)]">
+                <TableHead className="w-8 px-3 py-2 text-center font-medium">#</TableHead>
+                <TableHead className="px-3 py-2 text-left font-medium">이름</TableHead>
                 {(
                   [
                     ["price",        "현재가"],
@@ -148,7 +173,7 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                     ["monthReturn",  "1달 %"],
                   ] as [SortKey, string][]
                 ).map(([key, label]) => (
-                  <th
+                  <TableHead
                     key={key}
                     className="cursor-pointer px-3 py-2 text-right font-medium select-none"
                     onClick={() => handleSort(key)}
@@ -161,22 +186,22 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                         <ChevronsUpDown size={10} className="opacity-30" />
                       )}
                     </span>
-                  </th>
+                  </TableHead>
                 ))}
-                <th className="px-3 py-2 text-right font-medium">주요지표</th>
-              </tr>
-            </thead>
-            <tbody>
+                <TableHead className="px-3 py-2 text-right font-medium">주요지표</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filtered.map((stock, idx) => {
                 const up   = stock.changeRate > 0;
                 const down = stock.changeRate < 0;
                 return (
-                  <tr
+                  <TableRow
                     key={`${stock.symbol}-${idx}`}
                     className="cursor-pointer border-b border-[var(--tds-border-default)] transition-colors hover:bg-[var(--tds-surface-elevated)]"
                   >
-                    <td className="px-3 py-2.5 text-center text-[var(--tds-text-tertiary)]">{idx + 1}</td>
-                    <td className="px-3 py-2.5">
+                    <TableCell className="px-3 py-2.5 text-center text-[var(--tds-text-tertiary)]">{idx + 1}</TableCell>
+                    <TableCell className="px-3 py-2.5">
                       <div className="flex items-center gap-2">
                         <div
                           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[10px] font-bold"
@@ -188,63 +213,72 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                           <div className="font-medium text-[var(--tds-text-primary)]">{stock.name}</div>
                           <div className="flex items-center gap-1 text-[10px] text-[var(--tds-text-tertiary)]">
                             <span>{stock.symbol}</span>
-                            <span className="rounded bg-[var(--tds-surface-overlay)] px-1">{stock.market}</span>
+                            <Badge
+                              variant="secondary"
+                              className="rounded bg-[var(--tds-surface-overlay)] px-1 text-[10px] text-[var(--tds-text-tertiary)]"
+                            >
+                              {stock.market}
+                            </Badge>
                             <span>{stock.sector}</span>
                           </div>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-primary)]">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-primary)]">
                       {fmtPrice(stock.price)}
-                    </td>
-                    <td className={cn(
+                    </TableCell>
+                    <TableCell className={cn(
                       "px-3 py-2.5 text-right tabular-nums font-medium",
                       up ? "text-[var(--tds-text-rise)]" : down ? "text-[var(--tds-text-fall)]" : "text-[var(--tds-text-tertiary)]",
                     )}>
                       {stock.changeRate > 0 ? "+" : ""}{stock.changeRate.toFixed(2)}%
-                    </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
                       {fmtVol(stock.volume)}
-                    </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
                       {fmtCap(stock.marketCap)}
-                    </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">
-                      <span className={cn(
-                        "inline-block rounded px-1.5 py-0.5 text-[11px] font-medium",
-                        stock.tossTraders > 100000
-                          ? "bg-red-100 text-[var(--tds-text-rise)] dark:bg-red-950/40"
-                          : stock.tossTraders > 10000
-                          ? "bg-orange-100 text-orange-600 dark:bg-orange-950/40"
-                          : "text-[var(--tds-text-secondary)]",
-                      )}>
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right tabular-nums">
+                      <Badge
+                        className={cn(
+                          "inline-block rounded px-1.5 py-0.5 text-[11px] font-medium",
+                          stock.tossTraders > 100000
+                            ? "bg-red-100 text-[var(--tds-text-rise)] dark:bg-red-950/40"
+                            : stock.tossTraders > 10000
+                            ? "bg-orange-100 text-orange-600 dark:bg-orange-950/40"
+                            : "bg-transparent text-[var(--tds-text-secondary)]",
+                        )}
+                      >
                         {fmtTraders(stock.tossTraders)}
-                      </span>
-                    </td>
-                    <td className={cn(
+                      </Badge>
+                    </TableCell>
+                    <TableCell className={cn(
                       "px-3 py-2.5 text-right tabular-nums font-medium",
                       stock.monthReturn > 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]",
                     )}>
                       {stock.monthReturn > 0 ? "+" : ""}{stock.monthReturn.toFixed(2)}%
-                    </td>
-                    <td className="px-3 py-2.5 text-right">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 text-right">
                       {stock.signal && (
-                        <span className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-medium",
-                          stock.signal === "상승" ? "bg-red-100 text-[var(--tds-text-rise)]" :
-                          stock.signal === "하락" ? "bg-blue-100 text-[var(--tds-text-fall)]" :
-                          "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-tertiary)]",
-                        )}>
+                        <Badge
+                          className={cn(
+                            "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                            stock.signal === "상승" ? "bg-red-100 text-[var(--tds-text-rise)]" :
+                            stock.signal === "하락" ? "bg-blue-100 text-[var(--tds-text-fall)]" :
+                            "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-tertiary)]",
+                          )}
+                        >
                           {stock.signal}
-                        </span>
+                        </Badge>
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </div>
     </div>
   );

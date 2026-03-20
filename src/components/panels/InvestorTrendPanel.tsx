@@ -3,6 +3,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import type { InvestorTrend } from "@/types/stock";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 async function fetchTrend(symbol: string): Promise<InvestorTrend> {
   const res = await fetch(`/api/investor-trend/${symbol}`);
@@ -46,7 +56,13 @@ export function InvestorTrendPanel({ symbol }: { symbol: string }) {
       {/* Header */}
       <div className="flex shrink-0 items-center justify-between border-b border-[var(--tds-border-default)] px-3 py-2">
         <span className="font-medium text-[var(--tds-text-primary)]">투자자 동향</span>
-        <button className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">✕</button>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+        >
+          ✕
+        </Button>
       </div>
 
       {/* Today trend */}
@@ -60,30 +76,30 @@ export function InvestorTrendPanel({ symbol }: { symbol: string }) {
       </div>
 
       {/* History table */}
-      <div className="flex-1 overflow-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-[var(--tds-border-default)]">
-              <th className="px-3 py-1.5 text-left text-[10px] text-[var(--tds-text-tertiary)]">일자</th>
-              <th className="px-2 py-1.5 text-right text-[10px] text-[var(--tds-text-tertiary)]">개인</th>
-              <th className="px-2 py-1.5 text-right text-[10px] text-[var(--tds-text-tertiary)]">외국인</th>
-              <th className="px-2 py-1.5 text-right text-[10px] text-[var(--tds-text-tertiary)]">기관</th>
-            </tr>
-          </thead>
-          <tbody>
+      <ScrollArea className="flex-1">
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-[var(--tds-surface-base)]">
+            <TableRow className="border-b border-[var(--tds-border-default)]">
+              <TableHead className="px-3 py-1.5 text-left text-[10px] text-[var(--tds-text-tertiary)]">일자</TableHead>
+              <TableHead className="px-2 py-1.5 text-right text-[10px] text-[var(--tds-text-tertiary)]">개인</TableHead>
+              <TableHead className="px-2 py-1.5 text-right text-[10px] text-[var(--tds-text-tertiary)]">외국인</TableHead>
+              <TableHead className="px-2 py-1.5 text-right text-[10px] text-[var(--tds-text-tertiary)]">기관</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {(trend?.history ?? []).map((row) => (
-              <tr key={row.date} className="border-b border-[var(--tds-border-default)] hover:bg-[var(--tds-surface-elevated)]">
-                <td className="px-3 py-1.5 text-[var(--tds-text-tertiary)]">{row.date}</td>
+              <TableRow key={row.date} className="border-b border-[var(--tds-border-default)] hover:bg-[var(--tds-surface-elevated)]">
+                <TableCell className="px-3 py-1.5 text-[var(--tds-text-tertiary)]">{row.date}</TableCell>
                 {[row.retail, row.foreign, row.institution].map((v, i) => (
-                  <td key={i} className={cn("px-2 py-1.5 text-right tabular-nums", v >= 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]")}>
+                  <TableCell key={i} className={cn("px-2 py-1.5 text-right tabular-nums", v >= 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]")}>
                     {v === 0 ? "–" : (v > 0 ? "+" : "") + v.toLocaleString("ko-KR")}
-                  </td>
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </ScrollArea>
     </div>
   );
 }

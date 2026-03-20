@@ -4,6 +4,10 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FeedSubNav } from "./FeedSubNav";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // ── Mock news data (sourced from real 2026 articles) ───────────────────────
 
@@ -114,12 +118,12 @@ function NewsItem({ article }: { article: NewsArticle }) {
       {/* Text */}
       <div className="flex-1 min-w-0">
         <div className="mb-1 flex items-center gap-1.5">
-          <span
+          <Badge
             className="rounded-full px-2 py-0.5 text-[10px] font-medium text-white"
             style={{ backgroundColor: article.sourceColor }}
           >
             {article.source}
-          </span>
+          </Badge>
         </div>
         <h3 className="mb-1 text-[13px] font-semibold leading-snug text-[var(--tds-text-primary)] line-clamp-2">
           {article.title}
@@ -171,64 +175,68 @@ export function NewsView() {
 
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Filter tabs */}
-        <div className="flex shrink-0 items-center gap-0 border-b border-[var(--tds-border-default)] px-5">
-          {FILTER_TABS.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => { setFilterTab(tab); setPage(1); }}
-              className={cn(
-                "relative px-4 py-3 text-[13px] font-medium transition-colors",
-                filterTab === tab
-                  ? "text-[var(--tds-text-primary)]"
-                  : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]",
-              )}
-            >
-              {tab}
-              {filterTab === tab && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--tds-text-brand)]" />
-              )}
-            </button>
-          ))}
-        </div>
+        <Tabs
+          value={filterTab}
+          onValueChange={(v) => { setFilterTab(v as FilterTab); setPage(1); }}
+          className="shrink-0 border-b border-[var(--tds-border-default)] px-5"
+        >
+          <TabsList variant="line" className="h-auto gap-0 rounded-none bg-transparent p-0">
+            {FILTER_TABS.map((tab) => (
+              <TabsTrigger
+                key={tab}
+                value={tab}
+                className="relative h-auto rounded-none px-4 py-3 text-[13px] font-medium transition-colors data-active:text-[var(--tds-text-primary)] data-active:bg-transparent data-active:shadow-none after:rounded-full after:bg-[var(--tds-text-brand)]"
+              >
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
 
         {/* Articles */}
-        <div className="flex-1 overflow-y-auto">
+        <ScrollArea className="flex-1">
           {paged.map((article) => <NewsItem key={article.id} article={article} />)}
 
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-1 py-4">
-              <button
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="flex h-7 w-7 items-center justify-center rounded text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] disabled:opacity-30"
+                className="text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] disabled:opacity-30"
               >
                 <ChevronLeft size={14} />
-              </button>
+              </Button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-                <button
+                <Button
                   key={n}
+                  variant="ghost"
+                  size="icon-xs"
                   onClick={() => setPage(n)}
                   className={cn(
-                    "flex h-7 w-7 items-center justify-center rounded text-[12px] transition-colors",
+                    "text-[12px] transition-colors",
                     page === n
-                      ? "bg-[var(--tds-fill-brand)] font-semibold text-white"
+                      ? "bg-[var(--tds-fill-brand)] font-semibold text-white hover:bg-[var(--tds-fill-brand)]"
                       : "text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]",
                   )}
                 >
                   {n}
-                </button>
+                </Button>
               ))}
-              <button
+              <Button
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="flex h-7 w-7 items-center justify-center rounded text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] disabled:opacity-30"
+                className="text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] disabled:opacity-30"
               >
                 <ChevronRight size={14} />
-              </button>
+              </Button>
             </div>
           )}
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );

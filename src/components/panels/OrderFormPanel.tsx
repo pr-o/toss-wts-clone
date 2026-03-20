@@ -3,8 +3,19 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
-import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import type { Stock } from "@/types/stock";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 async function fetchStock(symbol: string): Promise<Stock> {
   const res = await fetch(`/api/stocks/${symbol}`);
@@ -42,10 +53,6 @@ export function OrderFormPanel({ symbol }: { symbol: string }) {
   const numPrice  = typeof price === "number" ? price : currentPrice;
   const numQty    = typeof qty === "number" ? qty : 0;
   const totalAmt  = numPrice * numQty;
-  const dir       = getPriceDirection(stock?.changeRate ?? 0);
-
-  const isBuy  = sideTab === "구매";
-  const isSell = sideTab === "판매";
 
   function adjustPrice(delta: number) { setPrice((p) => Math.max(1, (typeof p === "number" ? p : numPrice) + delta)); }
   function adjustQty(delta: number)   { setQty((q) => Math.max(0, (typeof q === "number" ? q : 0) + delta)); }
@@ -54,130 +61,199 @@ export function OrderFormPanel({ symbol }: { symbol: string }) {
   return (
     <div className="flex h-full flex-col bg-[var(--tds-surface-base)] text-xs">
       {/* Order mode tabs */}
-      <div className="flex shrink-0 border-b border-[var(--tds-border-default)]">
-        {ORDER_TABS.map((tab) => (
-          <button key={tab} onClick={() => setOrderTab(tab)}
-            className={cn("flex-1 py-2 text-[11px] font-medium transition-colors relative",
-              orderTab === tab
-                ? "text-[var(--tds-text-primary)] bg-[var(--tds-surface-base)]"
-                : "text-[var(--tds-text-tertiary)] bg-[var(--tds-surface-elevated)] hover:text-[var(--tds-text-secondary)]"
-            )}>
-            {tab}
-            {orderTab === tab && <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--tds-text-brand)]" />}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        value={orderTab}
+        onValueChange={(v) => setOrderTab(v as OrderTab)}
+        className="shrink-0 border-b border-[var(--tds-border-default)]"
+      >
+        <TabsList className="h-auto w-full rounded-none bg-transparent p-0">
+          {ORDER_TABS.map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              className={cn(
+                "relative flex-1 rounded-none py-2 text-[11px] font-medium transition-colors",
+                "data-active:text-[var(--tds-text-primary)] data-active:bg-[var(--tds-surface-base)] data-active:shadow-none",
+                "text-[var(--tds-text-tertiary)] bg-[var(--tds-surface-elevated)]",
+                "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[var(--tds-text-brand)] after:opacity-0 data-active:after:opacity-100"
+              )}
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {/* Buy/Sell/Wait tabs */}
-      <div className="flex shrink-0 border-b border-[var(--tds-border-default)] px-3 pt-2 pb-0 gap-1">
-        {SIDE_TABS.map((tab) => (
-          <button key={tab} onClick={() => setSideTab(tab)}
-            className={cn("relative px-3 pb-2 text-[11px] font-medium transition-colors",
-              sideTab === tab
-                ? tab === "구매" ? "text-[var(--tds-text-rise)]"
-                : tab === "판매" ? "text-[var(--tds-text-fall)]"
-                : "text-[var(--tds-text-secondary)]"
-                : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-            )}>
-            {tab}
-            {sideTab === tab && (
-              <span className={cn("absolute bottom-0 left-0 right-0 h-[2px]",
-                tab === "구매" ? "bg-[var(--tds-text-rise)]" : tab === "판매" ? "bg-[var(--tds-text-fall)]" : "bg-[var(--tds-text-secondary)]"
-              )} />
-            )}
-          </button>
-        ))}
-      </div>
+      <Tabs
+        value={sideTab}
+        onValueChange={(v) => setSideTab(v as SideTab)}
+        className="shrink-0 border-b border-[var(--tds-border-default)] px-3 pt-2 pb-0"
+      >
+        <TabsList className="h-auto gap-1 rounded-none bg-transparent p-0">
+          {SIDE_TABS.map((tab) => (
+            <TabsTrigger
+              key={tab}
+              value={tab}
+              className={cn(
+                "relative h-auto rounded-none px-3 pb-2 text-[11px] font-medium transition-colors",
+                "data-active:bg-transparent data-active:shadow-none",
+                tab === "구매" && "data-active:text-[var(--tds-text-rise)] after:bg-[var(--tds-text-rise)]",
+                tab === "판매" && "data-active:text-[var(--tds-text-fall)] after:bg-[var(--tds-text-fall)]",
+                tab === "대기" && "data-active:text-[var(--tds-text-secondary)] after:bg-[var(--tds-text-secondary)]",
+                "text-[var(--tds-text-tertiary)]",
+                "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:opacity-0 data-active:after:opacity-100"
+              )}
+            >
+              {tab}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-        {/* 주문 유형 */}
-        <div className="flex items-center justify-between">
-          <span className="text-[var(--tds-text-secondary)]">주문 유형</span>
-          <select
-            value={orderType}
-            onChange={(e) => setOrderType(e.target.value as typeof orderType)}
-            className="rounded border border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-2 py-1 text-[11px] text-[var(--tds-text-primary)] outline-none"
-          >
-            {ORDER_TYPES.map((t) => <option key={t}>{t}</option>)}
-          </select>
-        </div>
-
-        {/* 구매 가격 toggle */}
-        <div>
-          <div className="mb-1.5 text-[var(--tds-text-secondary)]">구매 가격</div>
-          <div className="flex rounded-lg border border-[var(--tds-border-default)] overflow-hidden">
-            {PRICE_TYPES.map((t) => (
-              <button key={t} onClick={() => setPriceType(t)}
-                className={cn("flex-1 py-1.5 text-[11px] font-medium transition-colors",
-                  priceType === t ? "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-primary)]" : "text-[var(--tds-text-tertiary)]"
-                )}>
-                {t}
-              </button>
-            ))}
+      <ScrollArea className="flex-1">
+        <div className="px-3 py-3 space-y-3">
+          {/* 주문 유형 */}
+          <div className="flex items-center justify-between">
+            <span className="text-[var(--tds-text-secondary)]">주문 유형</span>
+            <Select
+              value={orderType}
+              onValueChange={(v) => setOrderType(v as typeof orderType)}
+            >
+              <SelectTrigger
+                size="sm"
+                className="h-auto rounded border border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-2 py-1 text-[11px] text-[var(--tds-text-primary)]"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ORDER_TYPES.map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        </div>
 
-        {/* Price input */}
-        {priceType === "지정가" && (
+          {/* 구매 가격 toggle */}
           <div>
+            <div className="mb-1.5 text-[var(--tds-text-secondary)]">구매 가격</div>
+            <Tabs
+              value={priceType}
+              onValueChange={(v) => setPriceType(v as "지정가" | "시장가")}
+            >
+              <TabsList className="h-auto w-full rounded-lg border border-[var(--tds-border-default)] bg-transparent p-0 overflow-hidden">
+                {PRICE_TYPES.map((t) => (
+                  <TabsTrigger
+                    key={t}
+                    value={t}
+                    className="flex-1 rounded-none py-1.5 text-[11px] font-medium transition-colors data-active:bg-[var(--tds-surface-overlay)] data-active:text-[var(--tds-text-primary)] data-active:shadow-none text-[var(--tds-text-tertiary)]"
+                  >
+                    {t}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Price input */}
+          {priceType === "지정가" && (
+            <div>
+              <div className="flex items-center gap-1 rounded-lg border border-[var(--tds-border-default)] px-2 py-1.5 focus-within:border-[var(--tds-text-brand)]">
+                <Input
+                  type="number"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
+                  className="h-auto flex-1 border-0 bg-transparent p-0 text-right tabular-nums text-sm font-medium text-[var(--tds-text-primary)] shadow-none focus-visible:ring-0"
+                />
+                <span className="text-[var(--tds-text-tertiary)]">원</span>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => adjustPrice(-(stock?.change ?? 100))}
+                  className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+                >
+                  <Minus size={12} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => adjustPrice(stock?.change ?? 100)}
+                  className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+                >
+                  <Plus size={12} />
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* 수량 */}
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <span className="text-[var(--tds-text-secondary)]">수량</span>
+              <span className="text-[10px] text-[var(--tds-text-tertiary)]">최대 0주 가능</span>
+            </div>
             <div className="flex items-center gap-1 rounded-lg border border-[var(--tds-border-default)] px-2 py-1.5 focus-within:border-[var(--tds-text-brand)]">
-              <input
+              <Input
                 type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
-                className="flex-1 bg-transparent text-right tabular-nums text-sm font-medium text-[var(--tds-text-primary)] outline-none"
+                value={qty}
+                onChange={(e) => setQty(e.target.value === "" ? "" : Number(e.target.value))}
+                className="h-auto flex-1 border-0 bg-transparent p-0 text-right tabular-nums text-sm font-medium text-[var(--tds-text-primary)] shadow-none focus-visible:ring-0"
+                min={0}
               />
-              <span className="text-[var(--tds-text-tertiary)]">원</span>
-              <button onClick={() => adjustPrice(-(stock?.change ?? 100))} className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"><Minus size={12} /></button>
-              <button onClick={() => adjustPrice(stock?.change ?? 100)} className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"><Plus size={12} /></button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => adjustQty(-1)}
+                className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+              >
+                <Minus size={12} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => adjustQty(1)}
+                className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+              >
+                <Plus size={12} />
+              </Button>
+            </div>
+            {/* Percentage shortcuts */}
+            <div className="mt-1.5 flex gap-1">
+              {QTY_PRESETS.map((pct) => (
+                <Button
+                  key={pct}
+                  variant="outline"
+                  size="xs"
+                  onClick={() => setQtyPct(pct)}
+                  className="flex-1 border-[var(--tds-border-default)] py-1 text-[10px] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]"
+                >
+                  {pct}%
+                </Button>
+              ))}
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => setQtyPct(100)}
+                className="flex-1 border-[var(--tds-border-default)] py-1 text-[10px] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]"
+              >
+                최대
+              </Button>
             </div>
           </div>
-        )}
 
-        {/* 수량 */}
-        <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[var(--tds-text-secondary)]">수량</span>
-            <span className="text-[10px] text-[var(--tds-text-tertiary)]">최대 0주 가능</span>
-          </div>
-          <div className="flex items-center gap-1 rounded-lg border border-[var(--tds-border-default)] px-2 py-1.5 focus-within:border-[var(--tds-text-brand)]">
-            <input
-              type="number"
-              value={qty}
-              onChange={(e) => setQty(e.target.value === "" ? "" : Number(e.target.value))}
-              className="flex-1 bg-transparent text-right tabular-nums text-sm font-medium text-[var(--tds-text-primary)] outline-none"
-              min={0}
-            />
-            <button onClick={() => adjustQty(-1)} className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"><Minus size={12} /></button>
-            <button onClick={() => adjustQty(1)}  className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"><Plus size={12} /></button>
-          </div>
-          {/* Percentage shortcuts */}
-          <div className="mt-1.5 flex gap-1">
-            {QTY_PRESETS.map((pct) => (
-              <button key={pct} onClick={() => setQtyPct(pct)}
-                className="flex-1 rounded border border-[var(--tds-border-default)] py-1 text-[10px] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]">
-                {pct}%
-              </button>
-            ))}
-            <button onClick={() => setQtyPct(100)}
-              className="flex-1 rounded border border-[var(--tds-border-default)] py-1 text-[10px] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]">
-              최대
-            </button>
-          </div>
+          {/* Total amount */}
+          {numQty > 0 && (
+            <div className="flex items-center justify-between rounded-lg bg-[var(--tds-surface-overlay)] px-3 py-2">
+              <span className="text-[var(--tds-text-secondary)]">주문 금액</span>
+              <span className="font-medium tabular-nums text-[var(--tds-text-primary)]">{formatPrice(totalAmt)}원</span>
+            </div>
+          )}
         </div>
-
-        {/* Total amount */}
-        {numQty > 0 && (
-          <div className="flex items-center justify-between rounded-lg bg-[var(--tds-surface-overlay)] px-3 py-2">
-            <span className="text-[var(--tds-text-secondary)]">주문 금액</span>
-            <span className="font-medium tabular-nums text-[var(--tds-text-primary)]">{formatPrice(totalAmt)}원</span>
-          </div>
-        )}
-      </div>
+      </ScrollArea>
 
       {/* CTA button */}
       <div className="shrink-0 border-t border-[var(--tds-border-default)] p-3">
-        <button
+        <Button
           onClick={() => { alert(`${sideTab} 주문: ${numQty}주 @ ${formatPrice(numPrice)}원`); }}
           className={cn(
             "w-full rounded-xl py-3 text-sm font-bold text-white transition-opacity hover:opacity-90 active:opacity-75",
@@ -186,7 +262,7 @@ export function OrderFormPanel({ symbol }: { symbol: string }) {
           )}
         >
           {sideTab}하기
-        </button>
+        </Button>
       </div>
     </div>
   );
