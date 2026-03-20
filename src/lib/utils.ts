@@ -16,6 +16,12 @@ export function formatChange(value: number): string {
   return `${sign}${value.toFixed(2)}%`;
 }
 
+/** Format a market index value — comma-separated for ≥1000, 2 decimals otherwise */
+export function formatValue(value: number): string {
+  if (value >= 1000) return value.toLocaleString("ko-KR", { maximumFractionDigits: 2 });
+  return value.toFixed(2);
+}
+
 /** Returns "rise" | "fall" | "flat" for coloring */
 export function getPriceDirection(change: number): "rise" | "fall" | "flat" {
   if (change > 0) return "rise";

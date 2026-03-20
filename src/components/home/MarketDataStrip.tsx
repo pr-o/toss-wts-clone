@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
-import { cn, formatChange, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, formatValue, getPriceDirection } from "@/lib/utils";
 import type { MarketIndex } from "@/types/stock";
 
 async function fetchTicker(): Promise<MarketIndex[]> {
@@ -43,7 +43,7 @@ export function MarketDataStrip() {
           <div key={id} className="flex shrink-0 flex-col justify-center gap-0.5 border-r border-[var(--tds-border-default)] px-3 py-2 min-w-[130px] cursor-pointer hover:bg-[var(--tds-surface-overlay)] transition-colors">
             <span className="text-[10px] text-[var(--tds-text-tertiary)]">{label}</span>
             <span className="text-xs font-semibold tabular-nums text-[var(--tds-text-primary)]">
-              {item.value.toLocaleString("ko-KR", { maximumFractionDigits: 2 })}
+              {formatValue(item.value)}
             </span>
             <span className={cn("text-[10px] tabular-nums", {
               "text-[var(--tds-text-rise)]": dir === "rise",
