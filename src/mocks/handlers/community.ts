@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import { COMMUNITY_POSTS, NEWS_HEADLINES } from "../data/community";
+import { KOREAN_STOCKS } from "../data/stocks";
 
 export const communityHandlers = [
   http.get("/api/community/:symbol", ({ params }) => {
@@ -10,6 +11,25 @@ export const communityHandlers = [
   http.get("/api/news-headlines/:symbol", ({ params }) => {
     const headlines = NEWS_HEADLINES.filter((n) => n.symbol === params.symbol);
     return HttpResponse.json(headlines);
+  }),
+
+  // Bulk investor trends for all Korean stocks
+  http.get("/api/investor-trends", () => {
+    const data = KOREAN_STOCKS.map((s) => {
+      const seed = s.symbol.split("").reduce((a, c) => (a * 31 + c.charCodeAt(0)) & 0xffff, 0);
+      const rand = (spread: number) => Math.round(((seed * 7 + Math.random() * 100) % spread) - spread / 2);
+      return {
+        symbol: s.symbol,
+        name: s.name,
+        price: Math.round(s.price * (1 + (Math.random() * 2 - 1) * 0.04)),
+        changeRate: parseFloat((s.changeRate * (1 + (Math.random() * 2 - 1) * 0.06)).toFixed(2)),
+        avatarColor: s.avatarColor,
+        retail:      rand(1_200_000_000_000),
+        foreign:     rand(2_000_000_000_000),
+        institution: rand(800_000_000_000),
+      };
+    });
+    return HttpResponse.json(data);
   }),
 
   // Investor trend data

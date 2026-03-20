@@ -40,14 +40,14 @@ function generateOrderBook(basePrice: number): OrderBook {
 }
 
 function simulateLiveStock(s: (typeof ALL_STOCKS)[number]) {
-  const price = Math.round(jitter(s.price));
-  const changeRate = parseFloat((jitter(s.changeRate, 0.008)).toFixed(2));
+  const price = Math.round(jitter(s.price, 0.04));
+  const changeRate = parseFloat((jitter(s.changeRate, 0.06)).toFixed(2));
   const change = Math.round(price * changeRate / 100);
   const tradeVolumeBillion = s.tradeVolumeBillion !== undefined
-    ? Math.max(1, Math.round(jitter(s.tradeVolumeBillion, 0.01)))
+    ? Math.max(1, Math.round(jitter(s.tradeVolumeBillion, 0.08)))
     : undefined;
   const buyRatio = s.buyRatio !== undefined
-    ? Math.min(99, Math.max(1, Math.round(jitter(s.buyRatio, 0.005))))
+    ? Math.min(99, Math.max(1, Math.round(jitter(s.buyRatio, 0.04))))
     : undefined;
   return { ...s, price, change, changeRate, tradeVolumeBillion, buyRatio };
 }
