@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useThemeStore } from "@/stores/themeStore";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const NAV_TABS = [
   { id: "home",     label: "홈",           href: "/",                 match: (p: string) => p === "/",                  disabled: false },
@@ -22,21 +24,26 @@ export function TopBar() {
   const activeTab = NAV_TABS.find((t) => t.match(pathname))?.id ?? "home";
 
   return (
-    <header className="flex h-11 shrink-0 items-center gap-0 border-b border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-4">
+    <header className="sticky top-0 z-40 flex h-11 shrink-0 items-center gap-0 border-b border-[var(--tds-border-default)] bg-[var(--tds-surface-base)] px-4">
       {/* Logo */}
-      <button onClick={() => router.push("/")} className="mr-6 flex shrink-0 items-center gap-1 hover:opacity-80">
+      <Button
+        variant="ghost"
+        onClick={() => router.push("/")}
+        className="mr-6 shrink-0 gap-1 px-0 hover:bg-transparent"
+      >
         <span className="text-sm font-bold text-[var(--tds-text-brand)]">토스증권</span>
-      </button>
+      </Button>
 
       {/* Horizontal nav tabs */}
       <nav className="flex items-center gap-1">
         {NAV_TABS.map(({ id, label, href, disabled }) => (
-          <button
+          <Button
             key={id}
+            variant="ghost"
             disabled={disabled}
             onClick={() => router.push(href)}
             className={cn(
-              "relative rounded px-3 py-1.5 text-sm transition-colors",
+              "relative h-auto rounded px-3 py-1.5 text-sm transition-colors hover:bg-transparent",
               disabled
                 ? "cursor-not-allowed text-[var(--tds-text-tertiary)] opacity-40"
                 : activeTab === id
@@ -48,7 +55,7 @@ export function TopBar() {
             {activeTab === id && !disabled && (
               <span className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-[var(--tds-text-brand)]" />
             )}
-          </button>
+          </Button>
         ))}
       </nav>
 
@@ -65,28 +72,34 @@ export function TopBar() {
         )}
       >
         <Search size={13} className="shrink-0 text-[var(--tds-text-tertiary)]" />
-        <input
+        <Input
           type="text"
           placeholder="/ 눌러 검색하세요"
           onFocus={() => setSearchFocused(true)}
           onBlur={() => setSearchFocused(false)}
-          className="w-full bg-transparent text-[var(--tds-text-primary)] outline-none placeholder:text-[var(--tds-text-tertiary)]"
+          className="h-auto w-full border-0 bg-transparent p-0 text-xs text-[var(--tds-text-primary)] shadow-none outline-none placeholder:text-[var(--tds-text-tertiary)] focus-visible:ring-0"
         />
       </div>
 
       {/* Theme toggle */}
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={toggle}
-        className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-primary)]"
+        className="text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-primary)]"
         aria-label="테마 변경"
       >
         {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-      </button>
+      </Button>
 
       {/* Account avatar */}
-      <button className="ml-1 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--tds-surface-overlay)] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-elevated)]">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="ml-1 rounded-full bg-[var(--tds-surface-overlay)] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-elevated)]"
+      >
         <User size={15} />
-      </button>
+      </Button>
     </header>
   );
 }
