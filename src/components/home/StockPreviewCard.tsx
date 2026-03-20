@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
 import type { Stock, CommunityPost, NewsHeadline } from "@/types/stock";
 import { MiniChart } from "./MiniChart";
+import { Button } from "@/components/ui/button";
 
 async function fetchStock(symbol: string): Promise<Stock> {
   const res = await fetch(`/api/stocks/${symbol}`); return res.json();
@@ -90,12 +91,14 @@ export function StockPreviewCard({ symbol }: { symbol: string }) {
               </div>
             </div>
           ))}
-          <button
+          <Button
+            variant="ghost"
+            size="xs"
             onClick={() => router.push(`/stocks/${symbol}/order`)}
-            className="mt-1 text-[10px] text-[var(--tds-text-brand)] hover:underline"
+            className="mt-1 h-auto p-0 text-[10px] text-[var(--tds-text-brand)] hover:underline hover:bg-transparent"
           >
             전체 보기 &gt;
-          </button>
+          </Button>
         </div>
       )}
     </div>

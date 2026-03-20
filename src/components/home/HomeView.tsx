@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import type { MarketStatusResponse } from "@/mocks/handlers/marketStatus";
 import { StockRankList } from "./StockRankList";
 import { MarketDataStrip } from "./MarketDataStrip";
 import { StockPreviewCard } from "./StockPreviewCard";
 import { TrendingCategoriesView } from "./TrendingCategoriesView";
 import { InvestorTrendView } from "./InvestorTrendView";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const VIEW_TABS = [
   "실시간 차트",
@@ -63,35 +67,48 @@ export function HomeView() {
   const [hideRisky, setHideRisky] = useState(false);
   const [focusedSymbol, setFocusedSymbol] = useState<string>("000660");
 
+  const { data: marketStatus } = useQuery<MarketStatusResponse>({
+    queryKey: ["market-status"],
+    queryFn: () => fetch("/api/market-status").then((r) => r.json()),
+    refetchInterval: 60_000,
+  });
+
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      {/* ── Full-width: market type tabs + strip ── */}
-      <div className="flex shrink-0 items-center gap-1 border-b border-[var(--tds-border-default)] px-4 pt-2">
-        {(["국내 정규장", "해외 데이터마켓"] as const).map((tab) => (
-          <button
-            key={tab}
-            className={`flex items-center gap-1 px-0 pb-2 text-xs mr-4 border-b-2 transition-colors ${tab === "국내 정규장" ? "border-[var(--tds-text-primary)] font-semibold text-[var(--tds-text-primary)]" : "border-transparent text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"}`}
-          >
-            {tab === "국내 정규장" && (
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--tds-text-rise)]" />
-            )}
-            {tab}
-          </button>
-        ))}
+    <div className="flex flex-col">
+      {/* ── Market session indicators ── */}
+      <div className="flex shrink-0 items-center gap-5 border-b border-[var(--tds-border-default)] px-4 py-2">
+        {[marketStatus?.domestic, marketStatus?.overseas].map((session, i) => {
+          if (!session) return (
+            <div key={i} className="h-3 w-24 animate-pulse rounded bg-[var(--tds-surface-overlay)]" />
+          );
+          return (
+            <span key={i} className="flex items-center gap-1.5 text-xs text-[var(--tds-text-secondary)]">
+              <span
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  session.isOpen ? "bg-[var(--tds-text-rise)]" : "bg-[var(--tds-text-tertiary)]"
+                )}
+              />
+              {session.label}
+            </span>
+          );
+        })}
       </div>
 
       {/* Market data strip — spans full width to the sidebar */}
       <MarketDataStrip />
 
       {/* ── Body: stock list (left) + community area (right) ── */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1">
         {/* Stock list column */}
         <div className={cn(
-          "flex flex-col overflow-hidden border-r border-[var(--tds-border-default)]",
+          "flex flex-col border-r border-[var(--tds-border-default)]",
           viewTab === "실시간 차트" ? "w-[960px] shrink-0" : "flex-1",
         )}>
+          {/* Sticky controls: view tabs + filter chips + column headers */}
+          <div className="sticky top-11 z-30 bg-[var(--tds-surface-base)]">
           {/* View tabs */}
-          <div className="shrink-0 border-b border-[var(--tds-border-default)] px-4 py-2">
+          <div className="border-b border-[var(--tds-border-default)] px-4 py-2">
             <Tabs value={viewTab} onValueChange={setViewTab}>
               <TabsList className="h-auto gap-0 rounded-lg bg-[var(--tds-surface-overlay)] p-0.5">
                 {VIEW_TABS.map((tab) => (
@@ -149,7 +166,7 @@ export function HomeView() {
               </TabsList>
             </Tabs>
 
-            <div className="mx-1 h-3 w-px shrink-0 bg-[var(--tds-border-default)]" />
+            <Separator orientation="vertical" className="mx-1 h-3 bg-[var(--tds-border-default)]" />
 
             {/* Time tabs */}
             <Tabs
@@ -170,17 +187,40 @@ export function HomeView() {
               </TabsList>
             </Tabs>
 
-            <div className="mx-1 h-3 w-px shrink-0 bg-[var(--tds-border-default)]" />
-            <button
+            <Separator orientation="vertical" className="mx-1 h-3 bg-[var(--tds-border-default)]" />
+            <Button
+              size="xs"
               onClick={() => setHideRisky(!hideRisky)}
-              className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] transition-colors ${hideRisky ? "bg-[var(--tds-text-brand)] text-white" : "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-secondary)]"}`}
+              className={cn(
+                `shrink-0 gap-1 rounded-full px-2.5 py-1 text-[11px] transition-colors`,
+                hideRisky
+                  ? "bg-[var(--tds-text-brand)] text-white hover:bg-[var(--tds-text-brand)]"
+                  : "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]"
+              )}
             >
               <span
                 className={`h-2 w-2 rounded-full ${hideRisky ? "bg-white" : "bg-[var(--tds-text-brand)]"}`}
               />
               투자위험 주식 숨기기
-            </button>
+            </Button>
           </div>
+
+          {/* Column headers — sticky with the controls, only for 실시간 차트 */}
+          {viewTab === "실시간 차트" && (
+            <div className="grid grid-cols-[32px_28px_36px_1fr_100px_86px_70px_120px] items-center gap-2 border-b border-[var(--tds-border-default)] px-3 py-1.5 text-[12px] text-[var(--tds-text-tertiary)]">
+              <span />
+              <span>순위</span>
+              <span />
+              <span>종목명</span>
+              <span className="text-right">현재가</span>
+              <span className="text-right">
+                {timeTab === "실시간" || timeTab === "1일" ? "등락률" : `${timeTab} 수익률`}
+              </span>
+              <span className="text-right">거래대금 순</span>
+              <span className="text-center">토스증권 거래 비율 ⓘ</span>
+            </div>
+          )}
+          </div>{/* end sticky controls */}
 
           {viewTab === "실시간 차트" ? (
             <StockRankList
@@ -198,7 +238,7 @@ export function HomeView() {
         </div>
 
         {viewTab === "실시간 차트" && (
-          <div className="flex flex-1 flex-col overflow-y-auto bg-[var(--tds-surface-base)]">
+          <div className="sticky top-11 self-start flex-1 h-[calc(100vh-44px-28px)] overflow-y-auto bg-[var(--tds-surface-base)]">
             <StockPreviewCard symbol={focusedSymbol} />
           </div>
         )}
