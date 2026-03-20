@@ -39,10 +39,23 @@ function generateOrderBook(basePrice: number): OrderBook {
   return { symbol: "", asks, bids, timestamp: Date.now() };
 }
 
+function simulateLiveStock(s: (typeof ALL_STOCKS)[number]) {
+  const price = Math.round(jitter(s.price));
+  const changeRate = parseFloat((jitter(s.changeRate, 0.008)).toFixed(2));
+  const change = Math.round(price * changeRate / 100);
+  const tradeVolumeBillion = s.tradeVolumeBillion !== undefined
+    ? Math.max(1, Math.round(jitter(s.tradeVolumeBillion, 0.01)))
+    : undefined;
+  const buyRatio = s.buyRatio !== undefined
+    ? Math.min(99, Math.max(1, Math.round(jitter(s.buyRatio, 0.005))))
+    : undefined;
+  return { ...s, price, change, changeRate, tradeVolumeBillion, buyRatio };
+}
+
 export const stockHandlers = [
   // GET /api/stocks — list all stocks
   http.get("/api/stocks", () => {
-    const stocks = ALL_STOCKS.map((s) => ({ ...s, price: Math.round(jitter(s.price)) }));
+    const stocks = ALL_STOCKS.map(simulateLiveStock);
     return HttpResponse.json(stocks);
   }),
 
@@ -50,7 +63,7 @@ export const stockHandlers = [
   http.get("/api/stocks/:symbol", ({ params }) => {
     const stock = ALL_STOCKS.find((s) => s.symbol === params.symbol);
     if (!stock) return new HttpResponse(null, { status: 404 });
-    return HttpResponse.json({ ...stock, price: Math.round(jitter(stock.price)) });
+    return HttpResponse.json(simulateLiveStock(stock));
   }),
 
   // GET /api/stocks/:symbol/candles?interval=1d
