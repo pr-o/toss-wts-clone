@@ -8,6 +8,14 @@ import { useWatchlistStore } from "@/stores/watchlistStore";
 import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 async function fetchStocks(): Promise<Stock[]> {
   const res = await fetch("/api/stocks");
@@ -129,83 +137,87 @@ function StockRow({
   const { flashKey, style: flashStyle } = useChangeFlash(cr);
   const buyRatio = stock.buyRatio ?? 50;
   return (
-    <div
+    <TableRow
       onClick={() => onFocus(stock.symbol)}
       onDoubleClick={() => onNavigate(stock.symbol)}
       className={cn(
-        "grid cursor-pointer grid-cols-[32px_28px_36px_1fr_100px_86px_70px_120px] items-center gap-2 px-3 py-2.5 transition-colors",
+        "cursor-pointer border-0",
         isFocused
-          ? "bg-[var(--tds-surface-overlay)]"
+          ? "bg-[var(--tds-surface-overlay)] hover:bg-[var(--tds-surface-overlay)]"
           : "hover:bg-[var(--tds-surface-elevated)]",
       )}
     >
       {/* Heart */}
-      <Button
-        variant="ghost"
-        size="icon-xs"
-        onClick={(e) => {
-          e.stopPropagation();
-          watched ? onRemove(stock.symbol) : onAdd(stock.symbol);
-        }}
-        className={cn(
-          "rounded transition-colors",
-          watched
-            ? "text-[var(--tds-text-rise)]"
-            : "text-[var(--tds-border-strong)] hover:text-[var(--tds-text-secondary)]",
-        )}
-      >
-        <Heart size={13} fill={watched ? "currentColor" : "none"} />
-      </Button>
+      <TableCell className="px-3 py-2.5">
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={(e) => {
+            e.stopPropagation();
+            watched ? onRemove(stock.symbol) : onAdd(stock.symbol);
+          }}
+          className={cn(
+            "rounded transition-colors",
+            watched
+              ? "text-[var(--tds-text-rise)]"
+              : "text-[var(--tds-border-strong)] hover:text-[var(--tds-text-secondary)]",
+          )}
+        >
+          <Heart size={13} fill={watched ? "currentColor" : "none"} />
+        </Button>
+      </TableCell>
 
       {/* Rank */}
-      <span className="font-medium text-[var(--tds-text-secondary)]">
+      <TableCell className="pl-2 pr-0 py-2.5 font-medium text-[var(--tds-text-secondary)]">
         {idx + 1}
-      </span>
+      </TableCell>
 
       {/* Avatar */}
-      <StockAvatar stock={stock} />
+      <TableCell className="px-0 py-2.5">
+        <StockAvatar stock={stock} />
+      </TableCell>
 
       {/* Name */}
-      <div className="min-w-0">
+      <TableCell className="px-2 py-2.5">
         <div className="truncate font-medium text-[var(--tds-text-primary)]">
           {stock.name}
         </div>
-      </div>
+      </TableCell>
 
       {/* Price */}
-      <div className="text-right font-medium tabular-nums text-[var(--tds-text-primary)]">
+      <TableCell className="px-0 py-2.5 text-right font-medium tabular-nums text-[var(--tds-text-primary)]">
         {formatPrice(stock.price)}원
-      </div>
+      </TableCell>
 
-      {/* Change rate badge */}
-      <div
-        key={flashKey}
-        className="flex justify-end rounded"
-        style={flashStyle}
-      >
-        <ChangeRateBadge cr={cr} />
-      </div>
+      {/* Change rate */}
+      <TableCell className="pl-2 pr-0 py-2.5 text-right">
+        <div key={flashKey} className="flex justify-end rounded" style={flashStyle}>
+          <ChangeRateBadge cr={cr} />
+        </div>
+      </TableCell>
 
       {/* Trade volume */}
-      <div className="text-right tabular-nums text-[var(--tds-text-secondary)]">
+      <TableCell className="px-0 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
         {stock.tradeVolumeBillion ?? "–"}억원
-      </div>
+      </TableCell>
 
       {/* Buy/sell ratio bar */}
-      <div className="flex flex-col gap-0.5 px-1 self-end">
-        <div className="flex h-[3px] w-full overflow-hidden rounded-full">
-          <div
-            className="bg-[var(--tds-text-fall)] h-full transition-all"
-            style={{ width: `${buyRatio}%` }}
-          />
-          <div className="bg-[var(--tds-text-rise)] h-full flex-1" />
+      <TableCell className="px-3 py-2.5">
+        <div className="flex flex-col gap-0.5 self-end">
+          <div className="flex h-[3px] w-full overflow-hidden rounded-full">
+            <div
+              className="bg-[var(--tds-text-fall)] h-full transition-all"
+              style={{ width: `${buyRatio}%` }}
+            />
+            <div className="bg-[var(--tds-text-rise)] h-full flex-1" />
+          </div>
+          <div className="flex justify-between text-[12px] tabular-nums">
+            <span className="text-[var(--tds-text-fall)]">{buyRatio}</span>
+            <span className="text-[var(--tds-text-rise)]">{100 - buyRatio}</span>
+          </div>
         </div>
-        <div className="flex justify-between text-[12px] tabular-nums">
-          <span className="text-[var(--tds-text-fall)]">{buyRatio}</span>
-          <span className="text-[var(--tds-text-rise)]">{100 - buyRatio}</span>
-        </div>
-      </div>
-    </div>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -259,20 +271,39 @@ export function StockRankList({
       <div className="px-3 py-0.5 text-center text-[12px] text-[var(--tds-text-tertiary)]">
         종목을 더블클릭하면 상세 페이지로 이동해요
       </div>
-      {ranked.map((stock, idx) => (
-        <StockRow
-          key={stock.symbol}
-          stock={stock}
-          idx={idx}
-          cr={displayChangeRate(stock)}
-          isFocused={stock.symbol === focusedSymbol}
-          watched={has(stock.symbol)}
-          onFocus={onFocus}
-          onAdd={add}
-          onRemove={remove}
-          onNavigate={(sym) => router.push(`/stocks/${sym}/order`)}
-        />
-      ))}
+
+      <Table className="table-fixed">
+        <TableHeader className="border-b border-[var(--tds-border-default)] [&_tr]:border-0">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-8 px-3 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]" />
+            <TableHead className="w-7 pl-2 pr-0 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]">순위</TableHead>
+            <TableHead className="w-9 px-0 py-1.5" />
+            <TableHead className="px-2 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]">종목명</TableHead>
+            <TableHead className="w-[100px] px-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">현재가</TableHead>
+            <TableHead className="w-[86px] pl-2 pr-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              {timeFrame === "실시간" || timeFrame === "1일" ? "등락률" : `${timeFrame} 수익률`}
+            </TableHead>
+            <TableHead className="w-[70px] px-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">거래대금 순</TableHead>
+            <TableHead className="w-[120px] px-3 py-1.5 text-center text-[12px] font-normal text-[var(--tds-text-tertiary)]">토스증권 거래 비율 ⓘ</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="[&_tr:last-child]:border-0">
+          {ranked.map((stock, idx) => (
+            <StockRow
+              key={stock.symbol}
+              stock={stock}
+              idx={idx}
+              cr={displayChangeRate(stock)}
+              isFocused={stock.symbol === focusedSymbol}
+              watched={has(stock.symbol)}
+              onFocus={onFocus}
+              onAdd={add}
+              onRemove={remove}
+              onNavigate={(sym) => router.push(`/stocks/${sym}/order`)}
+            />
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }
