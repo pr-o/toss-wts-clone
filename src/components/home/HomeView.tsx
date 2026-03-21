@@ -13,21 +13,21 @@ import { InvestorTrendView } from "./InvestorTrendView";
 import { Button } from "@/components/ui/button";
 import { FilterTabs } from "./FilterTabs";
 
-const VIEW_TABS = [
-  "실시간 차트",
-  "지금 뜨는 카테고리",
-  "국내 투자자 동향",
-] as const;
+const VIEW_REALTIME   = "실시간 차트" as const;
+const VIEW_TRENDING   = "지금 뜨는 카테고리" as const;
+const VIEW_INVESTOR   = "국내 투자자 동향" as const;
+
+const VIEW_TABS = [VIEW_REALTIME, VIEW_TRENDING, VIEW_INVESTOR] as const;
 
 const VIEW_TO_PARAM: Record<string, string> = {
-  "실시간 차트": "realtime_chart",
-  "지금 뜨는 카테고리": "trending_category",
-  "국내 투자자 동향": "domestic_investor_trend",
+  [VIEW_REALTIME]: "realtime_chart",
+  [VIEW_TRENDING]: "trending_category",
+  [VIEW_INVESTOR]: "domestic_investor_trend",
 };
 const PARAM_TO_VIEW: Record<string, string> = {
-  realtime_chart: "실시간 차트",
-  trending_category: "지금 뜨는 카테고리",
-  domestic_investor_trend: "국내 투자자 동향",
+  realtime_chart: VIEW_REALTIME,
+  trending_category: VIEW_TRENDING,
+  domestic_investor_trend: VIEW_INVESTOR,
 };
 const MARKET_TABS = ["전체", "국내", "해외"] as const;
 const SORT_TABS = [
@@ -56,7 +56,7 @@ export function HomeView() {
   const setViewTab = (tab: string) => {
     const params = new URLSearchParams(searchParams.toString());
     const param = VIEW_TO_PARAM[tab];
-    if (param === "realtime_chart") params.delete("ranking-type");
+    if (param === VIEW_TO_PARAM[VIEW_REALTIME]) params.delete("ranking-type");
     else params.set("ranking-type", param);
     router.replace(`?${params.toString()}`);
   };
@@ -74,7 +74,6 @@ export function HomeView() {
 
   return (
     <div className="flex flex-col">
-      {/* ── Market session indicators ── */}
       <div className="flex shrink-0 items-center gap-5 border-b border-[var(--tds-border-default)] px-4 py-2">
         {[marketStatus?.domestic, marketStatus?.overseas].map((session, i) => {
           if (!session)
@@ -103,11 +102,9 @@ export function HomeView() {
         })}
       </div>
 
-      {/* Market data strip — spans full width to the sidebar */}
       <MarketDataStrip />
 
       <div className="sticky top-11 z-30 bg-[var(--tds-surface-base)]">
-        {/* View tabs */}
         <div className="border-b border-[var(--tds-border-default)] px-4 py-2">
           <FilterTabs
             value={viewTab}
@@ -116,9 +113,9 @@ export function HomeView() {
           />
         </div>
 
-        {/* Filter chip row — only shown for the stock list view */}
+        {/* Filter row: hidden (but kept in DOM) when not on 실시간 차트 to avoid layout shift */}
         <div
-          className={`flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--tds-border-default)] px-4 py-1.5 scrollbar-none ${viewTab !== "실시간 차트" ? "invisible h-0 overflow-hidden py-0" : ""}`}
+          className={`flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--tds-border-default)] px-4 py-1.5 scrollbar-none ${viewTab !== VIEW_REALTIME ? "invisible h-0 overflow-hidden py-0" : ""}`}
         >
           <FilterTabs
             value={marketTab}
@@ -158,20 +155,15 @@ export function HomeView() {
           </Button>
         </div>
       </div>
-      {/* end sticky controls */}
 
-      {/* ── Body: stock list (left) + community area (right) ── */}
       <div className="flex flex-1">
-        {/* Stock list column */}
         <div
           className={cn(
             "flex flex-col border-r border-[var(--tds-border-default)]",
-            viewTab === "실시간 차트" ? "min-w-0 flex-[3]" : "flex-1",
+            viewTab === VIEW_REALTIME ? "min-w-0 flex-[3]" : "flex-1",
           )}
         >
-          {/* Sticky controls: view tabs + filter chips + column headers */}
-
-          {viewTab === "실시간 차트" ? (
+          {viewTab === VIEW_REALTIME ? (
             <StockRankList
               onFocus={setFocusedSymbol}
               focusedSymbol={focusedSymbol}
@@ -179,14 +171,14 @@ export function HomeView() {
               sortBy={sortTab}
               timeFrame={timeTab}
             />
-          ) : viewTab === "지금 뜨는 카테고리" ? (
+          ) : viewTab === VIEW_TRENDING ? (
             <TrendingCategoriesView />
           ) : (
             <InvestorTrendView />
           )}
         </div>
 
-        {viewTab === "실시간 차트" && (
+        {viewTab === VIEW_REALTIME && (
           <div className="hidden xl:block sticky top-11 self-start flex-1 min-w-[360px] h-[calc(100vh-44px-28px)] overflow-y-auto bg-[var(--tds-surface-base)]">
             <StockPreviewCard symbol={focusedSymbol} />
           </div>
