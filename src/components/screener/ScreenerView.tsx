@@ -242,12 +242,12 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                     <TableCell className="px-3 py-2.5 text-right tabular-nums">
                       <Badge
                         className={cn(
-                          "inline-block rounded px-1.5 py-0.5 text-[11px] font-medium",
+                          "inline-block rounded px-1.5 py-0.5 text-[11px] font-medium bg-[var(--tds-surface-overlay)]",
                           stock.tossTraders > 100000
-                            ? "bg-red-100 text-[var(--tds-text-rise)] dark:bg-red-950/40"
+                            ? "text-[var(--tds-text-rise)]"
                             : stock.tossTraders > 10000
-                            ? "bg-orange-100 text-orange-600 dark:bg-orange-950/40"
-                            : "bg-transparent text-[var(--tds-text-secondary)]",
+                            ? "text-[var(--tds-text-secondary)]"
+                            : "text-[var(--tds-text-tertiary)]",
                         )}
                       >
                         {fmtTraders(stock.tossTraders)}
@@ -263,10 +263,10 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                       {stock.signal && (
                         <Badge
                           className={cn(
-                            "rounded-full px-2 py-0.5 text-[10px] font-medium",
-                            stock.signal === "상승" ? "bg-red-100 text-[var(--tds-text-rise)]" :
-                            stock.signal === "하락" ? "bg-blue-100 text-[var(--tds-text-fall)]" :
-                            "bg-[var(--tds-surface-overlay)] text-[var(--tds-text-tertiary)]",
+                            "rounded-full px-2 py-0.5 text-[10px] font-medium bg-[var(--tds-surface-overlay)]",
+                            stock.signal === "상승" ? "text-[var(--tds-text-rise)]" :
+                            stock.signal === "하락" ? "text-[var(--tds-text-fall)]" :
+                            "text-[var(--tds-text-tertiary)]",
                           )}
                         >
                           {stock.signal}
