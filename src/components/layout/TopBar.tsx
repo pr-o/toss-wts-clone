@@ -9,15 +9,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const NAV_TABS = [
-  { id: "home",     label: "홈",           href: "/",                 match: (p: string) => p === "/",                  disabled: false },
-  { id: "feed",     label: "피드",          href: "/feed/recommended", match: (p: string) => p.startsWith("/feed"),       disabled: false },
-  { id: "screener", label: "주식 골라보기",  href: "/screener",         match: (p: string) => p.startsWith("/screener"),  disabled: false },
-  { id: "account",  label: "내 계좌",        href: "/account",          match: (p: string) => p.startsWith("/account"),   disabled: true  },
+  {
+    id: "home",
+    label: "홈",
+    href: "/",
+    match: (p: string) => p === "/",
+    disabled: false,
+  },
+  {
+    id: "feed",
+    label: "피드",
+    href: "/feed/recommended",
+    match: (p: string) => p.startsWith("/feed"),
+    disabled: false,
+  },
+  {
+    id: "screener",
+    label: "주식 골라보기",
+    href: "/screener",
+    match: (p: string) => p.startsWith("/screener"),
+    disabled: false,
+  },
+  {
+    id: "account",
+    label: "내 계좌",
+    href: "/account",
+    match: (p: string) => p.startsWith("/account"),
+    disabled: true,
+  },
 ] as const;
 
 export function TopBar() {
   const { theme, toggle } = useThemeStore();
-  const router   = useRouter();
+  const router = useRouter();
   const pathname = usePathname();
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -31,7 +55,9 @@ export function TopBar() {
         onClick={() => router.push("/")}
         className="mr-6 shrink-0 gap-1 px-0 hover:bg-transparent"
       >
-        <span className="text-sm font-bold text-[var(--tds-text-brand)]">토스증권</span>
+        <span className="text-sm font-bold text-[var(--tds-text-brand)] tracking-wider">
+          토스쯩꿘
+        </span>
       </Button>
 
       {/* Horizontal nav tabs */}
@@ -47,8 +73,8 @@ export function TopBar() {
               disabled
                 ? "cursor-not-allowed text-[var(--tds-text-tertiary)] opacity-40"
                 : activeTab === id
-                ? "font-semibold text-[var(--tds-text-primary)]"
-                : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+                  ? "font-semibold text-[var(--tds-text-primary)]"
+                  : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]",
             )}
           >
             {label}
@@ -59,6 +85,11 @@ export function TopBar() {
         ))}
       </nav>
 
+      {/* Center notice */}
+      <div className="absolute left-1/2 -translate-x-1/2 text-[12px] text-[var(--tds-text-secondary)] font-bold">
+        이 웹사이트는 포트폴리오 용도로 토스증권을 모방한 사이트입니다
+      </div>
+
       {/* Spacer */}
       <div className="flex-1" />
 
@@ -68,10 +99,13 @@ export function TopBar() {
           "mr-2 flex h-8 w-52 items-center gap-2 rounded-lg border px-3 text-xs transition-all",
           searchFocused
             ? "border-[var(--tds-text-brand)] bg-[var(--tds-surface-base)]"
-            : "border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)]"
+            : "border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)]",
         )}
       >
-        <Search size={13} className="shrink-0 text-[var(--tds-text-tertiary)]" />
+        <Search
+          size={13}
+          className="shrink-0 text-[var(--tds-text-tertiary)]"
+        />
         <Input
           type="text"
           placeholder="/ 눌러 검색하세요"
