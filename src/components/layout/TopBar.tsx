@@ -1,9 +1,8 @@
 "use client";
 
-import { Moon, Sun, Search, User } from "lucide-react";
+import { Search, User } from "lucide-react";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useThemeStore } from "@/stores/themeStore";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +39,6 @@ const NAV_TABS = [
 ] as const;
 
 export function TopBar() {
-  const { theme, toggle } = useThemeStore();
   const router = useRouter();
   const pathname = usePathname();
   const [searchFocused, setSearchFocused] = useState(false);
@@ -114,17 +112,6 @@ export function TopBar() {
           className="h-auto w-full border-0 bg-transparent p-0 text-xs text-[var(--tds-text-primary)] shadow-none outline-none placeholder:text-[var(--tds-text-tertiary)] focus-visible:ring-0"
         />
       </div>
-
-      {/* Theme toggle */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={toggle}
-        className="text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-primary)]"
-        aria-label="테마 변경"
-      >
-        {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-      </Button>
 
       {/* Account avatar */}
       <Button

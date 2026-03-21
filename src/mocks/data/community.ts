@@ -19,8 +19,56 @@ export const COMMUNITY_POSTS: CommunityPost[] = [
   // 현대차 (005380)
   { id: "12", symbol: "005380", username: "자동차매니아", avatarColor: "#1d4ed8", minutesAgo: 4, content: "전기차 판매 회복세 기대해봅시다",         likes: 11 },
   // KODEX 인버스 (114800)
-  { id: "13", symbol: "114800", username: "인버스왕",   avatarColor: "#dc2626", minutesAgo: 2,  content: "하락장에 인버스 들고 웃고있음 ㅋ",       likes: 22 },
-  { id: "14", symbol: "114800", username: "곰장이",     avatarColor: "#6b7280", minutesAgo: 8,  content: "코스피 더 빠져줘야할텐데...",             likes: 6  },
+  { id: "13", symbol: "114800", username: "인버스왕",   avatarColor: "#dc2626", minutesAgo: 2,  content: "하락장에 인버스 들고 웃고있음 ㅋ",                         likes: 22 },
+  { id: "14", symbol: "114800", username: "곰장이",     avatarColor: "#6b7280", minutesAgo: 8,  content: "코스피 더 빠져줘야할텐데...",                               likes: 6  },
+  // ZSL
+  { id: "15", symbol: "ZSL",    username: "인버스러버",  avatarColor: "#ef4444", minutesAgo: 7,  content: "ZSL 타이밍 잘못 잡았다... 은 계속 오르네 ㅠ",               likes: 9  },
+  { id: "16", symbol: "ZSL",    username: "실버베어",   avatarColor: "#6b7280", minutesAgo: 14, content: "인버스 ETF는 장기 보유하면 안 된다는 걸 몸으로 배우는 중",    likes: 14 },
+  // 쿠팡 (CPNG)
+  { id: "17", symbol: "CPNG",   username: "로켓배송팬", avatarColor: "#e11d48", minutesAgo: 5,  content: "쿠팡 매일 쓰는데 주식도 사놔야겠다 ㅋㅋ",                     likes: 17 },
+  { id: "18", symbol: "CPNG",   username: "와우회원",   avatarColor: "#f97316", minutesAgo: 11, content: "로켓와우 가격 올려도 탈퇴 안 하는 사람들 봐라, 해자가 있음",   likes: 21 },
+  // IONQ
+  { id: "19", symbol: "IONQ",   username: "양자덕후",   avatarColor: "#7c3aed", minutesAgo: 6,  content: "양자컴퓨팅 아직 멀었다는 사람들 있는데... IONQ는 다르다",      likes: 13 },
+  { id: "20", symbol: "IONQ",   username: "미래투자자", avatarColor: "#8b5cf6", minutesAgo: 19, content: "변동성 장난 없음 ㅋㅋ 오늘만 10% 빠짐... 심장 어디 갔냐",      likes: 8  },
+  // BTX
+  { id: "21", symbol: "BTX",    username: "바이오신자", avatarColor: "#16a34a", minutesAgo: 9,  content: "임상 결과 발표 전 포지션 어떻게 가져가야 할지... 패스트트랙이니 기대는 됨", likes: 11 },
+  { id: "22", symbol: "BTX",    username: "올인갬블러", avatarColor: "#dc2626", minutesAgo: 22, content: "바이오는 올인 아니면 스몰베팅, 중간은 없음 ㅋㅋ",               likes: 5  },
+  // MSTU
+  { id: "23", symbol: "MSTU",   username: "비트코인형", avatarColor: "#f97316", minutesAgo: 4,  content: "MSTU 들고 심장 박동 빠르게 살기 ㅋㅋㅋ",                       likes: 26 },
+  { id: "24", symbol: "MSTU",   username: "레버리지중독", avatarColor: "#ea580c", minutesAgo: 16, content: "BTC 올라가면 2배 오르고 내려가면 2배 떨어지는 거 알면서도 못 팜", likes: 19 },
+  // VYM
+  { id: "25", symbol: "VYM",    username: "배당장인",   avatarColor: "#0891b2", minutesAgo: 3,  content: "월급처럼 배당 받는 기분이라 VYM 계속 적립 중 ㅎㅎ",             likes: 33 },
+  { id: "26", symbol: "VYM",    username: "존버왕",     avatarColor: "#0e7490", minutesAgo: 18, content: "ETF 장기투자는 VYM이 국룰이라는 분들 진짜 많더라",               likes: 22 },
+  // SPLG
+  { id: "27", symbol: "SPLG",   username: "SPY탈출",    avatarColor: "#1d4ed8", minutesAgo: 8,  content: "SPY보다 수수료 싼 SPLG로 갈아탄 지 1년... 누적 수익률은 비슷",  likes: 16 },
+  { id: "28", symbol: "SPLG",   username: "인덱스신자", avatarColor: "#3b82f6", minutesAgo: 21, content: "S&P 500 ETF는 그냥 오래 들고 있으면 장땡 아닌가요",              likes: 28 },
+  // Reddit (RDDT)
+  { id: "29", symbol: "RDDT",   username: "레딧덕",     avatarColor: "#ff4500", minutesAgo: 2,  content: "레딧 데이터 팔아서 AI 회사들한테 돈 버는 구조가 생각보다 크네", likes: 37 },
+  { id: "30", symbol: "RDDT",   username: "IPO대박",    avatarColor: "#f97316", minutesAgo: 13, content: "오늘 개장하자마자 27% 뛰어서 바로 팔았음... 아직 더 가는 중 ㅠ", likes: 44 },
+  // TSLT
+  { id: "31", symbol: "TSLT",   username: "테슬라레버", avatarColor: "#cc0000", minutesAgo: 6,  content: "TSLT 들고있으면 심장이 테슬라 주가와 2배로 반응함 ㅋㅋ",         likes: 20 },
+  { id: "32", symbol: "TSLT",   username: "롤오버고통", avatarColor: "#9ca3af", minutesAgo: 20, content: "레버리지 ETF는 롤오버 비용 때문에 장기 보유가 손해인데도 계속 들고 있음", likes: 12 },
+  // SoundHound (SOUN)
+  { id: "33", symbol: "SOUN",   username: "AI주식꾼",  avatarColor: "#0ea5e9", minutesAgo: 7,  content: "현차랑 계약 연장했다는 뉴스에 들어갔는데 엔비디아 지분 매각에 바로 마이너스 ㅠ", likes: 18 },
+  { id: "34", symbol: "SOUN",   username: "AI뚝배기",  avatarColor: "#38bdf8", minutesAgo: 23, content: "AI 관련주 변동성 어마어마하네... 타이밍 잘못 잡으면 빼기 각",     likes: 9  },
+  // Norwegian Cruise Line (NCLH)
+  { id: "35", symbol: "NCLH",   username: "코로나존버", avatarColor: "#003087", minutesAgo: 4,  content: "코로나 때 공포에 샀던 NCLH 드디어 손익분기점 넘음 ㅠㅠ",        likes: 41 },
+  { id: "36", symbol: "NCLH",   username: "크루즈팬",  avatarColor: "#0891b2", minutesAgo: 17, content: "크루즈 주식 들고 있으면 여행 갈 때마다 심리적으로 이득인 느낌 ㅋ", likes: 15 },
+  // SoFi (SOFI)
+  { id: "37", symbol: "SOFI",   username: "핀테크신자", avatarColor: "#8b5cf6", minutesAgo: 5,  content: "소파이 은행 라이선스 취득한다고 할 때 들어갔는데 드디어 빛을 보나", likes: 23 },
+  { id: "38", symbol: "SOFI",   username: "오늘도14%",  avatarColor: "#7c3aed", minutesAgo: 12, content: "오늘 14% 뛰었는데 이게 호재가 맞나요? ㅋㅋㅋ 너무 신남",         likes: 31 },
+  // Booking Holdings (BKNG)
+  { id: "39", symbol: "BKNG",   username: "부킹닷컴유저", avatarColor: "#003580", minutesAgo: 8, content: "부킹닷컴 사용자인데 주식도 매달 적립 중 ㅋ 잘 모르면 쓰는 서비스 사면 됨", likes: 27 },
+  { id: "40", symbol: "BKNG",   username: "소수점매수",  avatarColor: "#1d4ed8", minutesAgo: 24, content: "주가 너무 비싸서 소수점 매수로 조금씩 모으는 중 ㅎㅎ",            likes: 14 },
+  // Chevron (CVX)
+  { id: "41", symbol: "CVX",    username: "배당오일",   avatarColor: "#00aaff", minutesAgo: 3,  content: "배당 안정적이고 자사주 매입도 하니까 월급 받는 기분으로 보유 중",  likes: 29 },
+  { id: "42", symbol: "CVX",    username: "유가쫄보",   avatarColor: "#0369a1", minutesAgo: 15, content: "석유주는 유가에 연동되니까 OPEC 발표 때마다 심장이 쿵쾅거림",     likes: 11 },
+  // Palantir (PLTR)
+  { id: "43", symbol: "PLTR",   username: "국방AI팬",   avatarColor: "#dc2626", minutesAgo: 6,  content: "팰런티어 미군 AI 계약 계속 따오는데 왜 주가가 내리냐고 ㅠ",       likes: 35 },
+  { id: "44", symbol: "PLTR",   username: "공매도전사", avatarColor: "#b91c1c", minutesAgo: 19, content: "공매도 세력이랑 계속 싸우는 주식 ㅋㅋ 결국은 오른다",             likes: 24 },
+  // REX
+  { id: "45", symbol: "REX",    username: "낙폭매수",   avatarColor: "#6b7280", minutesAgo: 9,  content: "오늘 16% 빠졌는데 이게 기회인지 폭탄인지 ㅋㅋ 반반임",           likes: 7  },
+  { id: "46", symbol: "REX",    username: "바닥예측러", avatarColor: "#9ca3af", minutesAgo: 25, content: "REX 언제 바닥 잡냐... 아직 더 내려갈 것 같기도 하고",             likes: 4  },
 ];
 
 export const NEWS_HEADLINES: NewsHeadline[] = [
@@ -86,4 +134,52 @@ export const NEWS_HEADLINES: NewsHeadline[] = [
   // Berkshire Hathaway (BRK.B)
   { id: "43", symbol: "BRK.B",  content: "버크셔, 워런 버핏 CEO 퇴임… 그렉 아벨이 신임 CEO 취임하며 3,816억 달러 역대 최대 현금 보유 승계",                 hoursAgo: 14, iconColor: "#7c3aed" },
   { id: "44", symbol: "BRK.B",  content: "FY2025 영업이익 444억 달러로 전년 대비 약 30% 감소, 그렉 아벨 첫 주주서한으로 투자 전략 지속성 강조",             hoursAgo: 26, iconColor: "#7c3aed" },
+  // ZSL
+  { id: "45", symbol: "ZSL",    content: "은 선물 가격 연중 최고치 경신에 ZSL 2배 인버스 손실 폭 확대, 귀금속 강세 흐름 당분간 지속 전망",                   hoursAgo: 5,  iconColor: "#ef4444" },
+  { id: "46", symbol: "ZSL",    content: "연준 금리동결 신호에 안전자산 수요 급증… 은 가격 상승 압력 지속, ZSL 단기 하락 리스크 경고",                        hoursAgo: 17, iconColor: "#ef4444" },
+  // 쿠팡 (CPNG)
+  { id: "47", symbol: "CPNG",   content: "쿠팡, FY25 4분기 매출 91억 달러 기록… 한국 e커머스 시장 점유율 41% 돌파하며 성장 지속",                            hoursAgo: 8,  iconColor: "#e11d48" },
+  { id: "48", symbol: "CPNG",   content: "로켓배송 회원 수 1,400만 명 돌파, 대만·일본 시장 진출 가속화로 해외 매출 비중 확대",                               hoursAgo: 20, iconColor: "#e11d48" },
+  // IONQ
+  { id: "49", symbol: "IONQ",   content: "IonQ, 양자컴퓨팅 오류율 사상 최저치 달성… 상업화 일정 2년 앞당기며 경쟁사 대비 기술 우위 확보",                    hoursAgo: 6,  iconColor: "#7c3aed" },
+  { id: "50", symbol: "IONQ",   content: "미 공군과 1억 달러 규모 양자 시뮬레이션 계약 체결, 정부 수요 기반 매출 가시화",                                      hoursAgo: 22, iconColor: "#7c3aed" },
+  // BTX
+  { id: "51", symbol: "BTX",    content: "BTX, 혈액암 치료제 2상 임상 FDA 패스트트랙 지정… 조기 승인 가능성 높아져 바이오 섹터 주목",                         hoursAgo: 9,  iconColor: "#16a34a" },
+  { id: "52", symbol: "BTX",    content: "주요 임상 데이터 발표 앞두고 바이오 섹터 변동성 급증, 결과 발표 전후 주가 급등락 주의 요망",                         hoursAgo: 23, iconColor: "#16a34a" },
+  // MSTU
+  { id: "53", symbol: "MSTU",   content: "비트코인 가격 급등에 MSTU 레버리지 ETF 단기 80% 수익 기록… 2배 추종 구조로 변동성 극대화",                          hoursAgo: 4,  iconColor: "#f97316" },
+  { id: "54", symbol: "MSTU",   content: "MicroStrategy 비트코인 추가 매입 발표에 MSTU 연동 상품 동반 급등, 코인 흐름과 함께 모니터링 필수",                   hoursAgo: 16, iconColor: "#f97316" },
+  // VYM
+  { id: "55", symbol: "VYM",    content: "VYM, 배당 수익률 3.2% 안정적 유지… 연준 인하 국면에서 고배당 ETF 매력 재부각, 자금 유입 확대",                      hoursAgo: 11, iconColor: "#0891b2" },
+  { id: "56", symbol: "VYM",    content: "뱅가드 배당 ETF 시리즈 월간 순유입 사상 최대 기록, 장기 배당 투자자 수요 꾸준히 증가",                              hoursAgo: 25, iconColor: "#0891b2" },
+  // SPLG
+  { id: "57", symbol: "SPLG",   content: "SPLG, S&P 500 추종 ETF 중 최저 수준 보수율 유지… 장기 투자자 중심 자금 유입 가속화",                               hoursAgo: 7,  iconColor: "#1d4ed8" },
+  { id: "58", symbol: "SPLG",   content: "미 증시 변동성 확대 국면에서 S&P 500 ETF 저가 매수세 유입, SPLG 거래량 전주 대비 42% 증가",                         hoursAgo: 19, iconColor: "#1d4ed8" },
+  // Reddit (RDDT)
+  { id: "59", symbol: "RDDT",   content: "레딧, AI 기업 대상 데이터 라이선스 매출 급증… 광고 수익도 전분기 대비 29% 성장하며 어닝 서프라이즈",                 hoursAgo: 3,  iconColor: "#ff4500" },
+  { id: "60", symbol: "RDDT",   content: "IPO 이후 최고가 경신, 커뮤니티 기반 광고 모델과 AI 데이터 사업 확장 가능성 재평가 중",                              hoursAgo: 15, iconColor: "#ff4500" },
+  // TSLT
+  { id: "61", symbol: "TSLT",   content: "테슬라 주가 급락에 TSLT 2배 레버리지 ETF 동반 폭락… 하루 8% 손실로 단기 리스크 주의 요망",                          hoursAgo: 5,  iconColor: "#cc0000" },
+  { id: "62", symbol: "TSLT",   content: "일론 머스크 정치 행보 관련 유럽 브랜드 이미지 하락 지속… 테슬라 레버리지 상품 변동성 극대화",                        hoursAgo: 18, iconColor: "#cc0000" },
+  // SoundHound (SOUN)
+  { id: "63", symbol: "SOUN",   content: "사운드하운드, 현대기아차 음성 AI 플랫폼 공급 계약 연장… 차량 AI 시장 확대로 B2B 매출 기반 강화",                    hoursAgo: 10, iconColor: "#0ea5e9" },
+  { id: "64", symbol: "SOUN",   content: "엔비디아 보유 지분 전량 매각 소식에 주가 11% 급락… 기관 투자자 이탈 우려 확대",                                      hoursAgo: 24, iconColor: "#0ea5e9" },
+  // Norwegian Cruise Line (NCLH)
+  { id: "65", symbol: "NCLH",   content: "노르웨이 크루즈라인, 2026년 예약 건수 역대 최고치… 탑승률 107% 기록하며 분기 흑자 전환 성공",                        hoursAgo: 8,  iconColor: "#003087" },
+  { id: "66", symbol: "NCLH",   content: "연료비 하락과 여행 수요 회복세 맞물려 EBITDA 마진 3년 만에 최고 수준 달성",                                          hoursAgo: 21, iconColor: "#003087" },
+  // SoFi (SOFI)
+  { id: "67", symbol: "SOFI",   content: "소파이, 은행 라이선스 취득 2년 만에 순이익 달성… 핀테크에서 풀뱅킹으로의 전환 성공 평가",                            hoursAgo: 6,  iconColor: "#8b5cf6" },
+  { id: "68", symbol: "SOFI",   content: "연준 금리 인하 기조에 소파이 대출 포트폴리오 순이자마진 개선 전망, 목표주가 상향 릴레이",                            hoursAgo: 20, iconColor: "#8b5cf6" },
+  // Booking Holdings (BKNG)
+  { id: "69", symbol: "BKNG",   content: "부킹홀딩스, 분기 매출 56억 달러로 역대 최고치… AI 기반 여행 추천 도입으로 예약 전환율 18% 개선",                    hoursAgo: 9,  iconColor: "#003580" },
+  { id: "70", symbol: "BKNG",   content: "유럽·아시아 여행 수요 폭발적 증가로 사상 최대 예약 건수 기록, 2026년 가이던스 상향 조정",                            hoursAgo: 23, iconColor: "#003580" },
+  // Chevron (CVX)
+  { id: "71", symbol: "CVX",    content: "셰브론, FY25 잉여현금흐름으로 자사주 매입 175억 달러 집행… 주주환원 프로그램 업계 최대 규모",                        hoursAgo: 7,  iconColor: "#00aaff" },
+  { id: "72", symbol: "CVX",    content: "유가 하락에도 퍼미안 분지 생산량 사상 최대 기록, 철저한 비용 통제로 안정적 배당 지속 능력 확인",                     hoursAgo: 19, iconColor: "#00aaff" },
+  // Palantir (PLTR)
+  { id: "73", symbol: "PLTR",   content: "팰런티어, 미 육군과 2조 4천억 원 규모 AI 전투 시스템 계약 체결… 국방 AI 사업 최대 수혜주 부각",                     hoursAgo: 4,  iconColor: "#dc2626" },
+  { id: "74", symbol: "PLTR",   content: "S&P 500 편입 이후 기관 순매수 집중, 애널리스트 목표주가 줄상향… 소프트웨어 섹터 내 AI 대장주 자리매김",             hoursAgo: 17, iconColor: "#dc2626" },
+  // REX
+  { id: "75", symbol: "REX",    content: "REX, 금리 민감 섹터 전반 약세 속 낙폭 과대 평가… 단기 기술적 반등 구간 진입 분석",                                  hoursAgo: 6,  iconColor: "#6b7280" },
+  { id: "76", symbol: "REX",    content: "미 연방준비제도 추가 긴축 우려 재점화에 중소형주 동반 하락, REX 포함 섹터 전반 조정 국면",                           hoursAgo: 18, iconColor: "#6b7280" },
 ];

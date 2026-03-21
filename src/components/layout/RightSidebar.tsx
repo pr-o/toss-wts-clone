@@ -4,11 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   TrendingUp, Heart, Clock, Activity,
-  MessageSquare, LayoutPanelLeft, Settings,
-  ChevronDown, ChevronRight, MoreHorizontal,
+  ChevronDown, ChevronRight, MoreHorizontal, Moon, Sun,
 } from "lucide-react";
 import { useWatchlistStore } from "@/stores/watchlistStore";
 import { usePanelStore } from "@/stores/panelStore";
+import { useThemeStore } from "@/stores/themeStore";
 import { formatChange, formatPrice, getPriceDirection, cn } from "@/lib/utils";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
@@ -29,11 +29,6 @@ const MAIN_NAV = [
   { id: "realtime",  label: "실시간",   icon: Activity },
 ] as const;
 
-const UTIL_NAV = [
-  { id: "opinion", label: "의견",    icon: MessageSquare },
-  { id: "layout",  label: "화면 편집", icon: LayoutPanelLeft },
-  { id: "setting", label: "설정",    icon: Settings },
-] as const;
 
 type MainNavId = (typeof MAIN_NAV)[number]["id"];
 
@@ -195,6 +190,7 @@ function EmptyPanel({ label }: { label: string }) {
 
 export function RightSidebar() {
   const [activeId, setActiveId] = useState<MainNavId>("my-invest");
+  const { theme, toggle } = useThemeStore();
 
   return (
     <div className="flex h-full shrink-0 border-l border-[var(--tds-border-default)] text-xs">
@@ -234,16 +230,14 @@ export function RightSidebar() {
 
         {/* Utility nav buttons */}
         <div className="flex flex-col items-center gap-0.5">
-          {UTIL_NAV.map(({ id, label, icon: Icon }) => (
-            <Button
-              key={id}
-              variant="ghost"
-              className="flex h-auto w-10 flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[var(--tds-text-tertiary)] transition-colors hover:text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]"
-            >
-              <Icon size={16} />
-              <span className="text-[9px] leading-none">{label}</span>
-            </Button>
-          ))}
+          <Button
+            variant="ghost"
+            onClick={toggle}
+            className="flex h-auto w-10 flex-col items-center gap-0.5 rounded-lg px-1 py-2 text-[var(--tds-text-tertiary)] transition-colors hover:text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-overlay)]"
+          >
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            <span className="text-[9px] leading-none">테마</span>
+          </Button>
         </div>
       </div>
     </div>
