@@ -9,6 +9,19 @@ import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
 import {
+  MARKET_ALL,
+  MARKET_DOMESTIC,
+  MARKET_OVERSEAS,
+  SORT_TOSS_AMOUNT,
+  SORT_TOSS_VOLUME,
+  SORT_AMOUNT,
+  SORT_VOLUME,
+  SORT_RISING,
+  SORT_FALLING,
+  TIME_REALTIME,
+  TIME_1D,
+} from "./homeConstants";
+import {
   Table,
   TableBody,
   TableCell,
@@ -32,7 +45,7 @@ interface Props {
 
 /** Deterministic mock period return — seeded from symbol so it's stable across re-renders */
 function getPeriodChangeRate(stock: Stock, period: string): number {
-  if (period === "실시간" || period === "1일") return stock.changeRate;
+  if (period === TIME_REALTIME || period === TIME_1D) return stock.changeRate;
   const scaleMap: Record<string, number> = {
     "1주일": 3.5,
     "1개월": 9,
@@ -191,7 +204,11 @@ function StockRow({
 
       {/* Change rate */}
       <TableCell className="pl-2 pr-0 py-2.5 text-right">
-        <div key={flashKey} className="flex justify-end rounded" style={flashStyle}>
+        <div
+          key={flashKey}
+          className="flex justify-end rounded"
+          style={flashStyle}
+        >
           <ChangeRateBadge cr={cr} />
         </div>
       </TableCell>
@@ -213,7 +230,9 @@ function StockRow({
           </div>
           <div className="flex justify-between text-[12px] tabular-nums">
             <span className="text-[var(--tds-text-fall)]">{buyRatio}</span>
-            <span className="text-[var(--tds-text-rise)]">{100 - buyRatio}</span>
+            <span className="text-[var(--tds-text-rise)]">
+              {100 - buyRatio}
+            </span>
           </div>
         </div>
       </TableCell>
@@ -224,9 +243,9 @@ function StockRow({
 export function StockRankList({
   focusedSymbol,
   onFocus,
-  marketFilter = "전체",
-  sortBy = "토스증권 거래대금",
-  timeFrame = "실시간",
+  marketFilter = MARKET_ALL,
+  sortBy = SORT_TOSS_AMOUNT,
+  timeFrame = TIME_REALTIME,
 }: Props) {
   const router = useRouter();
   const { has, add, remove } = useWatchlistStore();
@@ -241,20 +260,22 @@ export function StockRankList({
   const filtered = stocks
     .filter((s) => s.rank !== undefined)
     .filter((s) => {
-      if (marketFilter === "국내")
+      if (marketFilter === MARKET_DOMESTIC)
         return s.market === "KRX" || s.market === "KOSDAQ";
-      if (marketFilter === "해외")
+      if (marketFilter === MARKET_OVERSEAS)
         return s.market === "NASDAQ" || s.market === "NYSE";
       return true;
     });
 
   const ranked = [...filtered].sort((a, b) => {
-    if (sortBy === "토스증권 거래대금" || sortBy === "거래대금")
+    if (sortBy === SORT_TOSS_AMOUNT || sortBy === SORT_AMOUNT)
       return (b.tradeVolumeBillion ?? 0) - (a.tradeVolumeBillion ?? 0);
-    if (sortBy === "토스증권 거래량" || sortBy === "거래량")
+    if (sortBy === SORT_TOSS_VOLUME || sortBy === SORT_VOLUME)
       return b.volume - a.volume;
-    if (sortBy === "급상승") return displayChangeRate(b) - displayChangeRate(a);
-    if (sortBy === "급하락") return displayChangeRate(a) - displayChangeRate(b);
+    if (sortBy === SORT_RISING)
+      return displayChangeRate(b) - displayChangeRate(a);
+    if (sortBy === SORT_FALLING)
+      return displayChangeRate(a) - displayChangeRate(b);
     return (a.rank ?? 99) - (b.rank ?? 99);
   });
 
@@ -262,7 +283,7 @@ export function StockRankList({
   const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pb-6">
       {/* Time label */}
       <div className="px-3 py-1 text-[12px] text-[var(--tds-text-tertiary)]">
         순위 · 오늘 {timeStr} 기준
@@ -276,15 +297,27 @@ export function StockRankList({
         <TableHeader className="border-b border-[var(--tds-border-default)] [&_tr]:border-0">
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-8 px-3 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]" />
-            <TableHead className="w-7 pl-2 pr-0 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]">순위</TableHead>
-            <TableHead className="w-9 px-0 py-1.5" />
-            <TableHead className="px-2 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]">종목명</TableHead>
-            <TableHead className="w-[100px] px-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">현재가</TableHead>
-            <TableHead className="w-[86px] pl-2 pr-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">
-              {timeFrame === "실시간" || timeFrame === "1일" ? "등락률" : `${timeFrame} 수익률`}
+            <TableHead className="w-7 pl-2 pr-0 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              순위
             </TableHead>
-            <TableHead className="w-[70px] px-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">거래대금 순</TableHead>
-            <TableHead className="w-[120px] px-3 py-1.5 text-center text-[12px] font-normal text-[var(--tds-text-tertiary)]">토스증권 거래 비율 ⓘ</TableHead>
+            <TableHead className="w-9 px-0 py-1.5" />
+            <TableHead className="px-2 py-1.5 text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              종목명
+            </TableHead>
+            <TableHead className="w-[100px] px-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              현재가
+            </TableHead>
+            <TableHead className="w-[86px] pl-2 pr-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              {timeFrame === TIME_REALTIME || timeFrame === TIME_1D
+                ? "등락률"
+                : `${timeFrame} 수익률`}
+            </TableHead>
+            <TableHead className="w-[70px] px-0 py-1.5 text-right text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              거래대금 순
+            </TableHead>
+            <TableHead className="w-[120px] px-3 py-1.5 text-center text-[12px] font-normal text-[var(--tds-text-tertiary)]">
+              토스증권 거래 비율
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody className="[&_tr:last-child]:border-0">

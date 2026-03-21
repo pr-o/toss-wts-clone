@@ -12,12 +12,18 @@ import { TrendingCategoriesView } from "./TrendingCategoriesView";
 import { InvestorTrendView } from "./InvestorTrendView";
 import { Button } from "@/components/ui/button";
 import { FilterTabs } from "./FilterTabs";
-
-const VIEW_REALTIME   = "실시간 차트" as const;
-const VIEW_TRENDING   = "지금 뜨는 카테고리" as const;
-const VIEW_INVESTOR   = "국내 투자자 동향" as const;
-
-const VIEW_TABS = [VIEW_REALTIME, VIEW_TRENDING, VIEW_INVESTOR] as const;
+import {
+  VIEW_REALTIME,
+  VIEW_TRENDING,
+  VIEW_INVESTOR,
+  VIEW_TABS,
+  MARKET_ALL,
+  MARKET_TABS,
+  SORT_TOSS_AMOUNT,
+  SORT_TABS,
+  TIME_REALTIME,
+  TIME_TABS,
+} from "./homeConstants";
 
 const VIEW_TO_PARAM: Record<string, string> = {
   [VIEW_REALTIME]: "realtime_chart",
@@ -29,30 +35,12 @@ const PARAM_TO_VIEW: Record<string, string> = {
   trending_category: VIEW_TRENDING,
   domestic_investor_trend: VIEW_INVESTOR,
 };
-const MARKET_TABS = ["전체", "국내", "해외"] as const;
-const SORT_TABS = [
-  "토스증권 거래대금",
-  "토스증권 거래량",
-  "거래대금",
-  "거래량",
-  "급상승",
-  "급하락",
-] as const;
-const TIME_TABS = [
-  "실시간",
-  "1일",
-  "1주일",
-  "1개월",
-  "3개월",
-  "6개월",
-  "1년",
-] as const;
 
 export function HomeView() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const viewTab =
-    PARAM_TO_VIEW[searchParams.get("ranking-type") ?? ""] ?? "실시간 차트";
+    PARAM_TO_VIEW[searchParams.get("ranking-type") ?? ""] ?? VIEW_REALTIME;
   const setViewTab = (tab: string) => {
     const params = new URLSearchParams(searchParams.toString());
     const param = VIEW_TO_PARAM[tab];
@@ -60,9 +48,9 @@ export function HomeView() {
     else params.set("ranking-type", param);
     router.replace(`?${params.toString()}`);
   };
-  const [marketTab, setMarketTab] = useState<string>("전체");
-  const [sortTab, setSortTab] = useState<string>("토스증권 거래대금");
-  const [timeTab, setTimeTab] = useState<string>("실시간");
+  const [marketTab, setMarketTab] = useState<string>(MARKET_ALL);
+  const [sortTab, setSortTab] = useState<string>(SORT_TOSS_AMOUNT);
+  const [timeTab, setTimeTab] = useState<string>(TIME_REALTIME);
   const [hideRisky, setHideRisky] = useState(false);
   const [focusedSymbol, setFocusedSymbol] = useState<string>("000660");
 
@@ -115,7 +103,7 @@ export function HomeView() {
 
         {/* Filter row: hidden (but kept in DOM) when not on 실시간 차트 to avoid layout shift */}
         <div
-          className={`flex shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--tds-border-default)] px-4 py-1.5 scrollbar-none ${viewTab !== VIEW_REALTIME ? "invisible h-0 overflow-hidden py-0" : ""}`}
+          className={`flex  shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--tds-border-default)] px-4 py-1.5 scrollbar-none ${viewTab !== VIEW_REALTIME ? "invisible h-0 overflow-hidden py-0" : ""}`}
         >
           <FilterTabs
             value={marketTab}
@@ -159,7 +147,7 @@ export function HomeView() {
       <div className="flex flex-1">
         <div
           className={cn(
-            "flex flex-col border-r border-[var(--tds-border-default)]",
+            "flex flex-col border-r border-[var(--tds-border-default)] ",
             viewTab === VIEW_REALTIME ? "min-w-0 flex-[3]" : "flex-1",
           )}
         >
@@ -179,7 +167,7 @@ export function HomeView() {
         </div>
 
         {viewTab === VIEW_REALTIME && (
-          <div className="hidden xl:block sticky top-11 self-start flex-1 min-w-[360px] h-[calc(100vh-44px-28px)] overflow-y-auto bg-[var(--tds-surface-base)]">
+          <div className="hidden xl:block sticky top-11 self-start flex-1 min-w-90 bg-[var(--tds-surface-base)]">
             <StockPreviewCard symbol={focusedSymbol} />
           </div>
         )}
