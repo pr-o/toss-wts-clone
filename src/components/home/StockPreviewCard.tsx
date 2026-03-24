@@ -2,26 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, formatPrice, getPriceColorClass, getPriceDirection } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { Stock, CommunityPost, NewsHeadline } from "@/types/stock";
 import { MiniChart } from "./MiniChart";
 import { Button } from "@/components/ui/button";
-
-async function fetchStock(symbol: string): Promise<Stock> {
-  const res = await fetch(`/api/stocks/${symbol}`); return res.json();
-}
-async function fetchPosts(symbol: string): Promise<CommunityPost[]> {
-  const res = await fetch(`/api/community/${symbol}`); return res.json();
-}
-async function fetchNews(symbol: string): Promise<NewsHeadline[]> {
-  const res = await fetch(`/api/news-headlines/${symbol}`); return res.json();
-}
+import { StockAvatar } from "@/components/ui/stock-avatar";
 
 export function StockPreviewCard({ symbol }: { symbol: string }) {
   const router = useRouter();
-  const { data: stock }   = useQuery({ queryKey: ["stock", symbol],    queryFn: () => fetchStock(symbol),  refetchInterval: 5_000 });
-  const { data: posts = [] } = useQuery({ queryKey: ["community", symbol], queryFn: () => fetchPosts(symbol) });
-  const { data: news = [] }  = useQuery({ queryKey: ["news-hl", symbol],   queryFn: () => fetchNews(symbol)  });
+  const { data: stock }      = useQuery({ queryKey: ["stock", symbol],     queryFn: () => api.stock(symbol),  refetchInterval: POLL.stocks });
+  const { data: posts = [] } = useQuery({ queryKey: ["community", symbol], queryFn: () => api.posts(symbol) });
+  const { data: news = [] }  = useQuery({ queryKey: ["news-hl", symbol],   queryFn: () => api.news(symbol)  });
 
   if (!stock) return <div className="p-4 text-xs text-[var(--tds-text-tertiary)]">로딩 중...</div>;
 
@@ -35,17 +28,11 @@ export function StockPreviewCard({ symbol }: { symbol: string }) {
         onClick={() => router.push(`/stocks/${symbol}/order`)}
       >
         <div className="flex items-center gap-2 mb-1">
-          <div className="h-7 w-7 shrink-0 rounded-full flex items-center justify-center text-[11px] font-bold text-white" style={{ backgroundColor: stock.avatarColor ?? "#6b7280" }}>
-            {stock.name[0]}
-          </div>
+          <StockAvatar name={stock.name} avatarColor={stock.avatarColor} size="md" />
           <div>
             <div className="font-semibold text-[var(--tds-text-primary)]">{stock.name}</div>
-            <div className={cn("tabular-nums font-medium", {
-              "text-[var(--tds-text-rise)]": dir === "rise",
-              "text-[var(--tds-text-fall)]": dir === "fall",
-              "text-[var(--tds-text-tertiary)]": dir === "flat",
-            })}>
-              {formatPrice(stock.price)}원 {stock.changeRate > 0 ? "+" : ""}{stock.changeRate.toFixed(2)}%
+            <div className={cn("tabular-nums font-medium", getPriceColorClass(dir))}>
+              {formatPrice(stock.price)}원 {formatChange(stock.changeRate)}
             </div>
           </div>
         </div>

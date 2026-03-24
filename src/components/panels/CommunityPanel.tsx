@@ -2,43 +2,33 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown } from "lucide-react";
+import { api } from "@/lib/api";
 import type { CommunityPost } from "@/types/stock";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-async function fetchPosts(symbol: string): Promise<CommunityPost[]> {
-  const res = await fetch(`/api/community/${symbol}`);
-  return res.json();
-}
+import { PanelHeader } from "@/components/ui/panel-header";
 
 export function CommunityPanel({ symbol }: { symbol: string }) {
   const { data: posts = [] } = useQuery({
     queryKey: ["community", symbol],
-    queryFn: () => fetchPosts(symbol),
+    queryFn: () => api.posts(symbol),
   });
 
   return (
     <div className="flex h-full flex-col bg-[var(--tds-surface-base)] text-xs">
-      {/* Header */}
-      <div className="flex shrink-0 items-center justify-between border-b border-[var(--tds-border-default)] px-3 py-2">
-        <span className="font-medium text-[var(--tds-text-primary)]">커뮤니티</span>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="xs"
-            className="gap-0.5 text-[10px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-          >
-            인기순 <ChevronDown size={11} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-          >
-            ✕
-          </Button>
-        </div>
-      </div>
+      <PanelHeader
+        title="커뮤니티"
+        right={
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="xs" className="gap-0.5 text-[10px] text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
+              인기순 <ChevronDown size={11} />
+            </Button>
+            <Button variant="ghost" size="icon-xs" className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
+              ✕
+            </Button>
+          </div>
+        }
+      />
 
       {/* Posts */}
       <ScrollArea className="flex-1">

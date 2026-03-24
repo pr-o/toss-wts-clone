@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Heart, MessageCircle, Share2, PenLine, ChevronDown } from "lucide-react";
 import { FeedSubNav } from "./FeedSubNav";
-import { cn } from "@/lib/utils";
+import { cn, formatChange, getValueColorClass } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -160,7 +160,6 @@ function DartEmbed({ card }: { card: DartCard }) {
 }
 
 function StockEmbed({ card }: { card: StockCard }) {
-  const up = card.changeRate > 0;
   return (
     <div className="mt-3 flex items-center justify-between rounded-xl border border-[var(--tds-border-default)] bg-[var(--tds-surface-overlay)] px-4 py-3">
       <div>
@@ -169,8 +168,8 @@ function StockEmbed({ card }: { card: StockCard }) {
       </div>
       <div className="text-right">
         <div className="text-sm font-semibold tabular-nums text-[var(--tds-text-primary)]">{card.price}원</div>
-        <div className={cn("text-[11px] font-medium tabular-nums", up ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]")}>
-          {up ? "+" : ""}{card.changeRate.toFixed(2)}%
+        <div className={cn("text-[11px] font-medium tabular-nums", getValueColorClass(card.changeRate))}>
+          {formatChange(card.changeRate)}
         </div>
       </div>
     </div>

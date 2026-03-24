@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, ChevronDown, ChevronUp, ChevronsUpDown, SlidersHorizontal } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatChange, getPriceDirection, getPriceColorClass } from "@/lib/utils";
 import { STRATEGIES, STRATEGY_STOCKS } from "./screenerData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,9 +95,9 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
             variant="ghost"
             onClick={() => router.push(`/screener/${s.id}`)}
             className={cn(
-              "h-auto w-full justify-start px-4 py-2 text-left text-[12px] transition-colors rounded-none",
+              "h-auto w-full cursor-pointer justify-start px-4 py-2 text-left text-[12px] transition-colors rounded-none",
               strategyId === s.id
-                ? "bg-[var(--tds-surface-overlay)] font-semibold text-[var(--tds-text-primary)]"
+                ? "bg-[var(--tds-surface-overlay)] font-semibold text-[var(--tds-text-primary)] hover:bg-[var(--tds-surface-overlay)]"
                 : "text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-elevated)] hover:text-[var(--tds-text-primary)]",
             )}
           >
@@ -158,10 +158,21 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
 
         {/* Table */}
         <ScrollArea className="flex-1">
-          <Table className="min-w-[900px] border-collapse text-[12px]">
+          <Table className="w-full table-fixed border-collapse text-[12px]">
+            <colgroup>
+              <col className="w-10" />
+              <col className="w-[220px]" />
+              <col className="w-[110px]" />
+              <col className="w-[80px]" />
+              <col className="w-[80px]" />
+              <col className="w-[90px]" />
+              <col className="w-[130px]" />
+              <col className="w-[70px]" />
+              <col className="w-[100px]" />
+            </colgroup>
             <TableHeader className="sticky top-0 z-10 bg-[var(--tds-surface-base)]">
               <TableRow className="border-b border-[var(--tds-border-default)] text-[10px] text-[var(--tds-text-tertiary)]">
-                <TableHead className="w-8 px-3 py-2 text-center font-medium">#</TableHead>
+                <TableHead className="px-3 py-2 text-center font-medium">#</TableHead>
                 <TableHead className="px-3 py-2 text-left font-medium">이름</TableHead>
                 {(
                   [
@@ -193,8 +204,7 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
             </TableHeader>
             <TableBody>
               {filtered.map((stock, idx) => {
-                const up   = stock.changeRate > 0;
-                const down = stock.changeRate < 0;
+                const dir = getPriceDirection(stock.changeRate);
                 return (
                   <TableRow
                     key={`${stock.symbol}-${idx}`}
@@ -227,11 +237,8 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                     <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-primary)]">
                       {fmtPrice(stock.price)}
                     </TableCell>
-                    <TableCell className={cn(
-                      "px-3 py-2.5 text-right tabular-nums font-medium",
-                      up ? "text-[var(--tds-text-rise)]" : down ? "text-[var(--tds-text-fall)]" : "text-[var(--tds-text-tertiary)]",
-                    )}>
-                      {stock.changeRate > 0 ? "+" : ""}{stock.changeRate.toFixed(2)}%
+                    <TableCell className={cn("px-3 py-2.5 text-right tabular-nums font-medium", getPriceColorClass(dir))}>
+                      {formatChange(stock.changeRate)}
                     </TableCell>
                     <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
                       {fmtVol(stock.volume)}
@@ -253,11 +260,8 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                         {fmtTraders(stock.tossTraders)}
                       </Badge>
                     </TableCell>
-                    <TableCell className={cn(
-                      "px-3 py-2.5 text-right tabular-nums font-medium",
-                      stock.monthReturn > 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]",
-                    )}>
-                      {stock.monthReturn > 0 ? "+" : ""}{stock.monthReturn.toFixed(2)}%
+                    <TableCell className={cn("px-3 py-2.5 text-right tabular-nums font-medium", getPriceColorClass(getPriceDirection(stock.monthReturn)))}>
+                      {formatChange(stock.monthReturn)}
                     </TableCell>
                     <TableCell className="px-3 py-2.5 text-right">
                       {stock.signal && (

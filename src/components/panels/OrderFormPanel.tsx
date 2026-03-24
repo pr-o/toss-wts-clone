@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,11 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-async function fetchStock(symbol: string): Promise<Stock> {
-  const res = await fetch(`/api/stocks/${symbol}`);
-  return res.json();
-}
 
 const ORDER_TABS   = ["일반주문", "간편주문", "조건주문"] as const;
 const SIDE_TABS    = ["구매", "판매", "대기"] as const;
@@ -41,8 +38,8 @@ export function OrderFormPanel({ symbol }: { symbol: string }) {
 
   const { data: stock } = useQuery({
     queryKey: ["stock", symbol],
-    queryFn: () => fetchStock(symbol),
-    refetchInterval: 3_000,
+    queryFn: () => api.stock(symbol),
+    refetchInterval: POLL.orderForm,
   });
 
   const currentPrice = stock?.price ?? 0;

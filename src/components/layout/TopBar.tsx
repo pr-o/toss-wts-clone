@@ -54,7 +54,7 @@ export function TopBar() {
         className="mr-6 shrink-0 gap-1 px-0 hover:bg-transparent"
       >
         <span className="text-sm font-bold text-[var(--tds-text-brand)] tracking-wider">
-          토스쯩꿘
+          토스"쯩꿘"
         </span>
       </Button>
 
@@ -67,7 +67,7 @@ export function TopBar() {
             disabled={disabled}
             onClick={() => router.push(href)}
             className={cn(
-              "relative h-auto rounded px-3 py-1.5 text-sm transition-colors hover:bg-transparent",
+              "relative h-auto cursor-pointer rounded px-3 py-1.5 text-sm transition-colors hover:bg-transparent",
               disabled
                 ? "cursor-not-allowed text-[var(--tds-text-tertiary)] opacity-40"
                 : activeTab === id

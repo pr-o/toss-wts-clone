@@ -28,3 +28,23 @@ export function getPriceDirection(change: number): "rise" | "fall" | "flat" {
   if (change < 0) return "fall";
   return "flat";
 }
+
+/** Maps a price direction to the correct TDS text color class */
+export function getPriceColorClass(direction: "rise" | "fall" | "flat"): string {
+  if (direction === "rise") return "text-[var(--tds-text-rise)]";
+  if (direction === "fall") return "text-[var(--tds-text-fall)]";
+  return "text-[var(--tds-text-tertiary)]";
+}
+
+/** Maps a raw numeric value (positive/negative) to the correct TDS text color class */
+export function getValueColorClass(value: number): string {
+  return value >= 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]";
+}
+
+/** Derives the avatar label character(s) from a stock name */
+export function getAvatarLabel(name: string): string {
+  if (name.startsWith("KODEX")) {
+    return name.includes("레버리지") || name.includes("인버스2X") ? "2x" : "K";
+  }
+  return name[0];
+}

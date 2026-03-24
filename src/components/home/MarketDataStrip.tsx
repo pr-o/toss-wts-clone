@@ -3,12 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import { cn, formatChange, formatValue, getPriceDirection } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { MarketIndex } from "@/types/stock";
-
-async function fetchTicker(): Promise<MarketIndex[]> {
-  const res = await fetch("/api/ticker");
-  return res.json();
-}
 
 const STRIP_INDICES = [
   { id: "USDKRW", label: "달러 환율" },
@@ -19,7 +16,7 @@ const STRIP_INDICES = [
 ];
 
 export function MarketDataStrip() {
-  const { data: items = [] } = useQuery({ queryKey: ["ticker"], queryFn: fetchTicker, refetchInterval: 10_000 });
+  const { data: items = [] } = useQuery({ queryKey: ["ticker"], queryFn: api.ticker, refetchInterval: POLL.trends });
   const map = Object.fromEntries(items.map((i) => [i.id, i]));
 
   return (

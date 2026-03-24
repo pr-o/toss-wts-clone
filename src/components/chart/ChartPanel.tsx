@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createChart, type IChartApi, type ISeriesApi, CandlestickSeries } from "lightweight-charts";
 import { useThemeStore } from "@/stores/themeStore";
+import { api } from "@/lib/api";
 import type { Candle } from "@/types/stock";
 
 function resolveChartColors() {
@@ -19,11 +20,6 @@ interface ChartPanelProps {
   symbol: string;
 }
 
-async function fetchCandles(symbol: string): Promise<Candle[]> {
-  const res = await fetch(`/api/stocks/${symbol}/candles`);
-  return res.json();
-}
-
 export function ChartPanel({ symbol }: ChartPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -32,7 +28,7 @@ export function ChartPanel({ symbol }: ChartPanelProps) {
 
   const { data: candles } = useQuery({
     queryKey: ["candles", symbol],
-    queryFn: () => fetchCandles(symbol),
+    queryFn: () => api.candles(symbol),
     staleTime: Infinity,
     refetchInterval: false,
     refetchOnWindowFocus: false,

@@ -2,24 +2,11 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, formatPrice, getPriceColorClass, getPriceDirection, getValueColorClass } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL, TAB_TRIGGER_CLASS } from "@/lib/constants";
+import type { StockTrend } from "@/types/stock";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-interface StockTrend {
-  symbol: string;
-  name: string;
-  price: number;
-  changeRate: number;
-  avatarColor?: string;
-  retail: number;
-  foreign: number;
-  institution: number;
-}
-
-async function fetchTrends(): Promise<StockTrend[]> {
-  const res = await fetch("/api/investor-trends");
-  return res.json();
-}
 
 function formatNetBuy(v: number) {
   const abs = Math.abs(v);
@@ -54,11 +41,7 @@ function TrendColumn({
         <span className="text-[14px] font-semibold text-[var(--tds-text-primary)]">{title}</span>
         <div className="flex flex-col items-end">
           <span className="text-[11px] text-[var(--tds-text-tertiary)]">합계 {mode === "buy" ? "순매수" : "순매도"}</span>
-          <span className={cn(
-            "text-[12px] font-medium tabular-nums",
-            totalDir === "rise" ? "text-[var(--tds-text-rise)]" :
-            totalDir === "fall" ? "text-[var(--tds-text-fall)]" : "text-[var(--tds-text-tertiary)]"
-          )}>
+          <span className={cn("text-[12px] font-medium tabular-nums", getPriceColorClass(totalDir))}>
             {formatNetBuy(totalNet)}
           </span>
         </div>
@@ -77,7 +60,6 @@ function TrendColumn({
         {sorted.map((t, i) => {
           const val = getter(t);
           const dir = getPriceDirection(t.changeRate);
-          const label = t.name.startsWith("KODEX") ? "K" : t.name[0];
           return (
             <div
               key={t.symbol}
@@ -89,7 +71,7 @@ function TrendColumn({
                   className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[9px] font-bold text-white"
                   style={{ backgroundColor: t.avatarColor ?? "#6b7280" }}
                 >
-                  {label}
+                  {t.name[0]}
                 </div>
                 <span className="truncate text-[13px] font-medium text-[var(--tds-text-primary)]">
                   {t.name}
@@ -99,18 +81,11 @@ function TrendColumn({
                 <span className="text-[12px] font-medium tabular-nums text-[var(--tds-text-primary)]">
                   {formatPrice(t.price)}
                 </span>
-                <span className={cn(
-                  "text-[11px] tabular-nums",
-                  dir === "rise" ? "text-[var(--tds-text-rise)]" :
-                  dir === "fall" ? "text-[var(--tds-text-fall)]" : "text-[var(--tds-text-tertiary)]"
-                )}>
-                  {t.changeRate > 0 ? "+" : ""}{t.changeRate.toFixed(2)}%
+                <span className={cn("text-[11px] tabular-nums", getPriceColorClass(dir))}>
+                  {formatChange(t.changeRate)}
                 </span>
               </div>
-              <span className={cn(
-                "text-right text-[12px] font-medium tabular-nums",
-                val >= 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]"
-              )}>
+              <span className={cn("text-right text-[12px] font-medium tabular-nums", getValueColorClass(val))}>
                 {formatNetBuy(val)}
               </span>
             </div>
@@ -135,8 +110,8 @@ export function InvestorTrendView() {
 
   const { data: trends = [] } = useQuery({
     queryKey: ["investor-trends"],
-    queryFn: fetchTrends,
-    refetchInterval: 10_000,
+    queryFn: api.investorTrends,
+    refetchInterval: POLL.trends,
   });
 
   return (
@@ -145,8 +120,8 @@ export function InvestorTrendView() {
       <div className="flex shrink-0 items-center border-b border-[var(--tds-border-default)] px-4 py-2">
         <Tabs value={mode} onValueChange={(v) => setMode(v as "buy" | "sell")}>
           <TabsList className="h-auto gap-0 rounded-lg bg-[var(--tds-surface-overlay)] p-0.5">
-            <TabsTrigger value="buy" className="rounded-md px-2 py-1 text-[11px] text-[var(--tds-text-tertiary)] data-active:bg-[var(--tds-surface-base)] data-active:font-medium data-active:text-[var(--tds-text-primary)] data-active:shadow-sm">순매수</TabsTrigger>
-            <TabsTrigger value="sell" className="rounded-md px-2 py-1 text-[11px] text-[var(--tds-text-tertiary)] data-active:bg-[var(--tds-surface-base)] data-active:font-medium data-active:text-[var(--tds-text-primary)] data-active:shadow-sm">순매도</TabsTrigger>
+            <TabsTrigger value="buy" className={TAB_TRIGGER_CLASS}>순매수</TabsTrigger>
+            <TabsTrigger value="sell" className={TAB_TRIGGER_CLASS}>순매도</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>

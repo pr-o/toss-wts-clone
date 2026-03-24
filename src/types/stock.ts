@@ -36,6 +36,17 @@ export interface NewsHeadline {
   iconColor: string;
 }
 
+export interface StockTrend {
+  symbol: string;
+  name: string;
+  price: number;
+  changeRate: number;
+  avatarColor?: string;
+  retail: number;
+  foreign: number;
+  institution: number;
+}
+
 export interface InvestorTrend {
   symbol: string;
   retail: number;       // 개인 (net buy quantity)

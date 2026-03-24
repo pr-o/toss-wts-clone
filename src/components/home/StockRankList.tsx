@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useWatchlistStore } from "@/stores/watchlistStore";
-import { cn, formatPrice, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, formatPrice, getPriceColorClass, getPriceDirection } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
+import { StockAvatar } from "@/components/ui/stock-avatar";
 import {
   MARKET_ALL,
   MARKET_DOMESTIC,
@@ -29,11 +32,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-async function fetchStocks(): Promise<Stock[]> {
-  const res = await fetch("/api/stocks");
-  return res.json();
-}
 
 interface Props {
   focusedSymbol: string;
@@ -66,18 +64,8 @@ function getPeriodChangeRate(stock: Stock, period: string): number {
 function ChangeRateBadge({ cr }: { cr: number }) {
   const dir = getPriceDirection(cr);
   return (
-    <span
-      className={cn(
-        "rounded px-1.5 py-0.5 font-medium tabular-nums",
-        dir === "rise"
-          ? "text-[var(--tds-text-rise)]"
-          : dir === "fall"
-            ? "text-[var(--tds-text-fall)]"
-            : "text-[var(--tds-text-tertiary)]",
-      )}
-    >
-      {cr > 0 ? "+" : ""}
-      {cr.toFixed(2)}%
+    <span className={cn("rounded px-1.5 py-0.5 font-medium tabular-nums", getPriceColorClass(dir))}>
+      {formatChange(cr)}
     </span>
   );
 }
@@ -103,25 +91,6 @@ function useChangeFlash(cr: number) {
     : undefined;
 
   return { flashKey, style };
-}
-
-function StockAvatar({ stock }: { stock: Stock }) {
-  const bg = stock.avatarColor ?? "#6b7280";
-  const label = stock.name.startsWith("KODEX")
-    ? stock.name.includes("레버리지")
-      ? "2x"
-      : stock.name.includes("인버스2X")
-        ? "2x"
-        : "K"
-    : stock.name[0];
-  return (
-    <div
-      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white"
-      style={{ backgroundColor: bg }}
-    >
-      {label}
-    </div>
-  );
 }
 
 interface RowProps {
@@ -187,7 +156,7 @@ function StockRow({
 
       {/* Avatar */}
       <TableCell className="px-0 py-2.5">
-        <StockAvatar stock={stock} />
+        <StockAvatar name={stock.name} avatarColor={stock.avatarColor} size="lg" />
       </TableCell>
 
       {/* Name */}
@@ -251,8 +220,8 @@ export function StockRankList({
   const { has, add, remove } = useWatchlistStore();
   const { data: stocks = [] } = useQuery({
     queryKey: ["stocks"],
-    queryFn: fetchStocks,
-    refetchInterval: 5_000,
+    queryFn: api.stocks,
+    refetchInterval: POLL.stocks,
   });
 
   const displayChangeRate = (s: Stock) => getPeriodChangeRate(s, timeFrame);

@@ -4,13 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createChart, CandlestickSeries, HistogramSeries, TickMarkType } from "lightweight-charts";
 import { useThemeStore } from "@/stores/themeStore";
-import { cn } from "@/lib/utils";
+import { cn, formatChange, getPriceDirection, getPriceColorClass } from "@/lib/utils";
+import { api } from "@/lib/api";
 import type { Candle } from "@/types/stock";
-
-async function fetchCandles(symbol: string): Promise<Candle[]> {
-  const res = await fetch(`/api/stocks/${symbol}/candles`);
-  return res.json();
-}
 
 interface Props {
   symbol: string;
@@ -67,7 +63,7 @@ export function MiniChart({ symbol }: Props) {
 
   const { data: candles } = useQuery({
     queryKey: ["candles", symbol],
-    queryFn:  () => fetchCandles(symbol),
+    queryFn:  () => api.candles(symbol),
     staleTime: Infinity,
     refetchInterval: false,
     refetchOnWindowFocus: false,
@@ -199,13 +195,8 @@ export function MiniChart({ symbol }: Props) {
             ))}
             <div className="contents">
               <span className="text-[var(--tds-text-tertiary)]">등락률</span>
-              <span className={cn(
-                "text-right tabular-nums font-medium",
-                tooltip.changeRate > 0 ? "text-[var(--tds-text-rise)]" :
-                tooltip.changeRate < 0 ? "text-[var(--tds-text-fall)]" :
-                "text-[var(--tds-text-tertiary)]",
-              )}>
-                {tooltip.changeRate > 0 ? "+" : ""}{tooltip.changeRate.toFixed(2)}%
+              <span className={cn("text-right tabular-nums font-medium", getPriceColorClass(getPriceDirection(tooltip.changeRate)))}>
+                {formatChange(tooltip.changeRate)}
               </span>
             </div>
           </div>
