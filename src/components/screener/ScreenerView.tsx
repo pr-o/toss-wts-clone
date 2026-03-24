@@ -95,9 +95,9 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
             variant="ghost"
             onClick={() => router.push(`/screener/${s.id}`)}
             className={cn(
-              "h-auto w-full justify-start px-4 py-2 text-left text-[12px] transition-colors rounded-none",
+              "h-auto w-full cursor-pointer justify-start px-4 py-2 text-left text-[12px] transition-colors rounded-none",
               strategyId === s.id
-                ? "bg-[var(--tds-surface-overlay)] font-semibold text-[var(--tds-text-primary)]"
+                ? "bg-[var(--tds-surface-overlay)] font-semibold text-[var(--tds-text-primary)] hover:bg-[var(--tds-surface-overlay)]"
                 : "text-[var(--tds-text-secondary)] hover:bg-[var(--tds-surface-elevated)] hover:text-[var(--tds-text-primary)]",
             )}
           >
@@ -158,10 +158,21 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
 
         {/* Table */}
         <ScrollArea className="flex-1">
-          <Table className="min-w-[900px] border-collapse text-[12px]">
+          <Table className="w-full table-fixed border-collapse text-[12px]">
+            <colgroup>
+              <col className="w-10" />
+              <col className="w-[220px]" />
+              <col className="w-[110px]" />
+              <col className="w-[80px]" />
+              <col className="w-[80px]" />
+              <col className="w-[90px]" />
+              <col className="w-[130px]" />
+              <col className="w-[70px]" />
+              <col className="w-[100px]" />
+            </colgroup>
             <TableHeader className="sticky top-0 z-10 bg-[var(--tds-surface-base)]">
               <TableRow className="border-b border-[var(--tds-border-default)] text-[10px] text-[var(--tds-text-tertiary)]">
-                <TableHead className="w-8 px-3 py-2 text-center font-medium">#</TableHead>
+                <TableHead className="px-3 py-2 text-center font-medium">#</TableHead>
                 <TableHead className="px-3 py-2 text-left font-medium">이름</TableHead>
                 {(
                   [

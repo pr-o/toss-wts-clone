@@ -23,10 +23,10 @@ export function FeedSubNav() {
             variant="ghost"
             onClick={() => router.push(href)}
             className={cn(
-              "h-auto w-full rounded-none py-2 text-[11px] font-medium transition-colors",
+              "h-auto w-full cursor-pointer rounded-none py-2 text-[11px] font-medium transition-colors",
               active
-                ? "font-semibold text-[var(--tds-text-primary)]"
-                : "text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]",
+                ? "font-semibold text-[var(--tds-text-primary)] hover:bg-[var(--tds-surface-overlay)]"
+                : "text-[var(--tds-text-tertiary)] hover:bg-[var(--tds-surface-overlay)] hover:text-[var(--tds-text-secondary)]",
             )}
           >
             {label}
