@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { POLL } from "@/lib/constants";
 import type { MarketStatusResponse } from "@/mocks/handlers/marketStatus";
 import { StockRankList } from "./StockRankList";
 import { MarketDataStrip } from "./MarketDataStrip";
@@ -57,7 +58,7 @@ export function HomeView() {
   const { data: marketStatus } = useQuery<MarketStatusResponse>({
     queryKey: ["market-status"],
     queryFn: () => fetch("/api/market-status").then((r) => r.json()),
-    refetchInterval: 60_000,
+    refetchInterval: POLL.marketStatus,
   });
 
   return (

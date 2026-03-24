@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, ChevronDown, ChevronUp, ChevronsUpDown, SlidersHorizontal } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatChange, getPriceDirection, getPriceColorClass } from "@/lib/utils";
 import { STRATEGIES, STRATEGY_STOCKS } from "./screenerData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -193,8 +193,7 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
             </TableHeader>
             <TableBody>
               {filtered.map((stock, idx) => {
-                const up   = stock.changeRate > 0;
-                const down = stock.changeRate < 0;
+                const dir = getPriceDirection(stock.changeRate);
                 return (
                   <TableRow
                     key={`${stock.symbol}-${idx}`}
@@ -227,11 +226,8 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                     <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-primary)]">
                       {fmtPrice(stock.price)}
                     </TableCell>
-                    <TableCell className={cn(
-                      "px-3 py-2.5 text-right tabular-nums font-medium",
-                      up ? "text-[var(--tds-text-rise)]" : down ? "text-[var(--tds-text-fall)]" : "text-[var(--tds-text-tertiary)]",
-                    )}>
-                      {stock.changeRate > 0 ? "+" : ""}{stock.changeRate.toFixed(2)}%
+                    <TableCell className={cn("px-3 py-2.5 text-right tabular-nums font-medium", getPriceColorClass(dir))}>
+                      {formatChange(stock.changeRate)}
                     </TableCell>
                     <TableCell className="px-3 py-2.5 text-right tabular-nums text-[var(--tds-text-secondary)]">
                       {fmtVol(stock.volume)}
@@ -253,11 +249,8 @@ export function ScreenerView({ strategyId = 1 }: { strategyId?: number }) {
                         {fmtTraders(stock.tossTraders)}
                       </Badge>
                     </TableCell>
-                    <TableCell className={cn(
-                      "px-3 py-2.5 text-right tabular-nums font-medium",
-                      stock.monthReturn > 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]",
-                    )}>
-                      {stock.monthReturn > 0 ? "+" : ""}{stock.monthReturn.toFixed(2)}%
+                    <TableCell className={cn("px-3 py-2.5 text-right tabular-nums font-medium", getPriceColorClass(getPriceDirection(stock.monthReturn)))}>
+                      {formatChange(stock.monthReturn)}
                     </TableCell>
                     <TableCell className="px-3 py-2.5 text-right">
                       {stock.signal && (

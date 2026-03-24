@@ -7,7 +7,7 @@ import {
   Bot, Globe, Factory, Brain, Monitor, Cloud, ShoppingBag, Film,
   Shield, Gem, Truck, Plane,
 } from "lucide-react";
-import { cn, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, getPriceColorClass, getPriceDirection } from "@/lib/utils";
 
 interface CategoryRow {
   name: string;
@@ -114,13 +114,8 @@ function CategoryList({
               <span className="truncate text-[14px] font-medium text-[var(--tds-text-primary)]">{cat.name}</span>
 
               {/* Change rate — immediately after name */}
-              <span className={cn(
-                "text-[12px] font-bold tabular-nums",
-                dir === "rise" ? "text-[var(--tds-text-rise)]" :
-                dir === "fall" ? "text-[var(--tds-text-fall)]" :
-                "text-[var(--tds-text-tertiary)]"
-              )}>
-                {cat.changeRate > 0 ? "+" : ""}{cat.changeRate.toFixed(2)}%
+              <span className={cn("text-[12px] font-bold tabular-nums", getPriceColorClass(dir))}>
+                {formatChange(cat.changeRate)}
               </span>
 
               {/* Spacer */}

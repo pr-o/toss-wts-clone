@@ -9,17 +9,14 @@ import {
 import { useWatchlistStore } from "@/stores/watchlistStore";
 import { usePanelStore } from "@/stores/panelStore";
 import { useThemeStore } from "@/stores/themeStore";
-import { formatChange, formatPrice, getPriceDirection, cn } from "@/lib/utils";
+import { formatChange, formatPrice, getPriceColorClass, getPriceDirection, cn } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-async function fetchStocks(): Promise<Stock[]> {
-  const res = await fetch("/api/stocks");
-  return res.json();
-}
 
 /* ── outer nav items ──────────────────────────────────────────── */
 const MAIN_NAV = [
@@ -132,7 +129,7 @@ function MyInvestPanel() {
 function WatchlistPanel() {
   const { symbols } = useWatchlistStore();
   const setActiveSymbol = usePanelStore((s) => s.setActiveSymbol);
-  const { data: stocks = [] } = useQuery({ queryKey: ["stocks"], queryFn: fetchStocks, refetchInterval: 5_000 });
+  const { data: stocks = [] } = useQuery({ queryKey: ["stocks"], queryFn: api.stocks, refetchInterval: POLL.stocks });
   const watchlistStocks = stocks.filter((s) => symbols.includes(s.symbol));
 
   return (
@@ -161,11 +158,7 @@ function WatchlistPanel() {
                 </div>
                 <div className="ml-2 shrink-0 text-right">
                   <div className="tabular-nums text-[12px] text-[var(--tds-text-primary)]">{formatPrice(stock.price)}</div>
-                  <div className={cn("tabular-nums text-[11px]", {
-                    "text-[var(--tds-text-rise)]": dir === "rise",
-                    "text-[var(--tds-text-fall)]": dir === "fall",
-                    "text-[var(--tds-text-tertiary)]": dir === "flat",
-                  })}>
+                  <div className={cn("tabular-nums text-[11px]", getPriceColorClass(dir))}>
                     {formatChange(stock.changeRate)}
                   </div>
                 </div>

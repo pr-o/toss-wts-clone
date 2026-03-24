@@ -1,3 +1,4 @@
+import { TAB_TRIGGER_CLASS } from "@/lib/constants";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -6,9 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const TRIGGER_CLASS =
-  "cursor-pointer rounded-md px-2 py-1 text-[11px] text-[var(--tds-text-tertiary)] data-active:bg-[var(--tds-surface-base)] data-active:font-medium data-active:text-[var(--tds-text-primary)] data-active:shadow-sm";
 
 interface FilterTabsProps {
   value: string;
@@ -51,7 +49,7 @@ export function FilterTabs({
       >
         <TabsList className="h-auto gap-0 rounded-lg bg-[var(--tds-surface-overlay)] p-0.5">
           {options.map((opt) => (
-            <TabsTrigger key={opt} value={opt} className={TRIGGER_CLASS}>
+            <TabsTrigger key={opt} value={opt} className={TAB_TRIGGER_CLASS}>
               {opt}
             </TabsTrigger>
           ))}

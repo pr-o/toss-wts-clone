@@ -2,22 +2,19 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { formatPrice, getPriceDirection, cn } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { OrderBook } from "@/types/stock";
 
 interface OrderBookPanelProps {
   symbol: string;
 }
 
-async function fetchOrderBook(symbol: string): Promise<OrderBook> {
-  const res = await fetch(`/api/stocks/${symbol}/orderbook`);
-  return res.json();
-}
-
 export function OrderBookPanel({ symbol }: OrderBookPanelProps) {
   const { data: ob } = useQuery({
     queryKey: ["orderbook", symbol],
-    queryFn: () => fetchOrderBook(symbol),
-    refetchInterval: 2_000,
+    queryFn: () => api.orderbook(symbol),
+    refetchInterval: POLL.orderbook,
   });
 
   const maxQty = Math.max(

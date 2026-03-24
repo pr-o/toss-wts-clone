@@ -5,16 +5,13 @@ import { useState } from "react";
 import { Heart, Star, LayoutPanelLeft } from "lucide-react";
 import { usePanelStore } from "@/stores/panelStore";
 import { useWatchlistStore } from "@/stores/watchlistStore";
-import { cn, formatChange, formatPrice, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, formatPrice, getPriceColorClass, getPriceDirection } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { Stock } from "@/types/stock";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-async function fetchStock(symbol: string): Promise<Stock> {
-  const res = await fetch(`/api/stocks/${symbol}`);
-  return res.json();
-}
 
 const DETAIL_TABS = [
   { id: "chart",     label: "차트·호가" },
@@ -35,18 +32,14 @@ export function StockHeader({ symbol: symbolProp }: { symbol?: string }) {
 
   const { data: stock } = useQuery({
     queryKey: ["stock", symbol],
-    queryFn: () => fetchStock(symbol),
-    refetchInterval: 5_000,
+    queryFn: () => api.stock(symbol),
+    refetchInterval: POLL.stocks,
   });
 
   if (!stock) return <div className="h-[88px] shrink-0 border-b border-[var(--tds-border-default)]" />;
 
   const dir = getPriceDirection(stock.changeRate);
-  const changeColor = {
-    "text-[var(--tds-text-rise)]": dir === "rise",
-    "text-[var(--tds-text-fall)]": dir === "fall",
-    "text-[var(--tds-text-tertiary)]": dir === "flat",
-  };
+  const changeColor = getPriceColorClass(dir);
 
   const stats = [
     { label: "1일 최고", value: formatPrice(stock.high) },

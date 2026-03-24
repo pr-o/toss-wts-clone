@@ -3,21 +3,18 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { cn, formatChange, formatValue, getPriceDirection } from "@/lib/utils";
+import { cn, formatChange, formatValue, getPriceColorClass, getPriceDirection } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { MarketIndex } from "@/types/stock";
-
-async function fetchTicker(): Promise<MarketIndex[]> {
-  const res = await fetch("/api/ticker");
-  return res.json();
-}
 
 export function BottomTicker() {
   const [paused, setPaused] = useState(false);
   const router = useRouter();
   const { data: items = [] } = useQuery({
     queryKey: ["ticker"],
-    queryFn: fetchTicker,
-    refetchInterval: 10_000,
+    queryFn: api.ticker,
+    refetchInterval: POLL.trends,
   });
 
   if (items.length === 0) return null;
@@ -42,11 +39,7 @@ export function BottomTicker() {
                 {formatValue(item.value)}
               </span>
               <span
-                className={cn("ml-1 tabular-nums", {
-                  "text-[var(--tds-text-rise)]": dir === "rise",
-                  "text-[var(--tds-text-fall)]": dir === "fall",
-                  "text-[var(--tds-text-tertiary)]": dir === "flat",
-                })}
+                className={cn("ml-1 tabular-nums", getPriceColorClass(dir))}
               >
                 {formatChange(item.changeRate)}
               </span>

@@ -1,10 +1,13 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
+import { cn, getValueColorClass } from "@/lib/utils";
+import { api } from "@/lib/api";
+import { POLL } from "@/lib/constants";
 import type { InvestorTrend } from "@/types/stock";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PanelHeader } from "@/components/ui/panel-header";
 import {
   Table,
   TableBody,
@@ -14,18 +17,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-async function fetchTrend(symbol: string): Promise<InvestorTrend> {
-  const res = await fetch(`/api/investor-trend/${symbol}`);
-  return res.json();
-}
-
 function TrendBar({ value }: { value: number }) {
   const max = 500000;
   const pct = Math.min(Math.abs(value) / max, 1) * 50;
   const isPos = value >= 0;
   return (
     <div className="flex items-center gap-1">
-      <span className={cn("w-16 text-right tabular-nums", isPos ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]")}>
+      <span className={cn("w-16 text-right tabular-nums", getValueColorClass(value))}>
         {value === 0 ? "–" : (isPos ? "+" : "") + value.toLocaleString("ko-KR")}
       </span>
       <div className="flex h-1.5 w-20 overflow-hidden rounded-full bg-[var(--tds-surface-overlay)]">
@@ -41,8 +39,8 @@ function TrendBar({ value }: { value: number }) {
 export function InvestorTrendPanel({ symbol }: { symbol: string }) {
   const { data: trend } = useQuery({
     queryKey: ["investor-trend", symbol],
-    queryFn: () => fetchTrend(symbol),
-    refetchInterval: 10_000,
+    queryFn: () => api.investorTrend(symbol),
+    refetchInterval: POLL.trends,
   });
 
   const rows = [
@@ -53,17 +51,14 @@ export function InvestorTrendPanel({ symbol }: { symbol: string }) {
 
   return (
     <div className="flex h-full flex-col bg-[var(--tds-surface-base)] text-xs">
-      {/* Header */}
-      <div className="flex shrink-0 items-center justify-between border-b border-[var(--tds-border-default)] px-3 py-2">
-        <span className="font-medium text-[var(--tds-text-primary)]">투자자 동향</span>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
-        >
-          ✕
-        </Button>
-      </div>
+      <PanelHeader
+        title="투자자 동향"
+        right={
+          <Button variant="ghost" size="icon-xs" className="text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]">
+            ✕
+          </Button>
+        }
+      />
 
       {/* Today trend */}
       <div className="shrink-0 border-b border-[var(--tds-border-default)] px-3 py-2 space-y-1.5">
@@ -91,7 +86,7 @@ export function InvestorTrendPanel({ symbol }: { symbol: string }) {
               <TableRow key={row.date} className="border-b border-[var(--tds-border-default)] hover:bg-[var(--tds-surface-elevated)]">
                 <TableCell className="px-3 py-1.5 text-[var(--tds-text-tertiary)]">{row.date}</TableCell>
                 {[row.retail, row.foreign, row.institution].map((v, i) => (
-                  <TableCell key={i} className={cn("px-2 py-1.5 text-right tabular-nums", v >= 0 ? "text-[var(--tds-text-rise)]" : "text-[var(--tds-text-fall)]")}>
+                  <TableCell key={i} className={cn("px-2 py-1.5 text-right tabular-nums", getValueColorClass(v))}>
                     {v === 0 ? "–" : (v > 0 ? "+" : "") + v.toLocaleString("ko-KR")}
                   </TableCell>
                 ))}
