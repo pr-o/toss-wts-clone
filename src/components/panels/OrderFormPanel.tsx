@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { Minus, Plus } from "lucide-react";
 import { cn, formatPrice } from "@/lib/utils";
@@ -143,9 +144,16 @@ export function OrderFormPanel({ symbol }: { symbol: string }) {
                   <TabsTrigger
                     key={t}
                     value={t}
-                    className="flex-1 rounded-none py-1.5 text-[11px] font-medium transition-colors data-active:bg-[var(--tds-surface-overlay)] data-active:text-[var(--tds-text-primary)] data-active:shadow-none text-[var(--tds-text-tertiary)]"
+                    className="relative flex-1 rounded-none py-1.5 text-[11px] font-medium transition-colors data-active:bg-transparent data-active:text-[var(--tds-text-primary)] data-active:shadow-none text-[var(--tds-text-tertiary)]"
                   >
-                    {t}
+                    {priceType === t && (
+                      <motion.div
+                        layoutId="price-type-pill"
+                        className="absolute inset-0 bg-[var(--tds-surface-overlay)]"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">{t}</span>
                   </TabsTrigger>
                 ))}
               </TabsList>
