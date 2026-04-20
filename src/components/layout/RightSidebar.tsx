@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   TrendingUp, Heart, Clock, Activity,
   ChevronDown, ChevronRight, MoreHorizontal, Moon, Sun,
@@ -106,9 +107,16 @@ function MyInvestPanel() {
                   <TabsTrigger
                     key={tab}
                     value={tab}
-                    className="h-auto rounded-full px-2.5 py-1 text-[10px] transition-colors data-active:bg-[var(--tds-surface-overlay)] data-active:font-semibold data-active:text-[var(--tds-text-primary)] data-active:shadow-none text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
+                    className="relative h-auto rounded-full px-2.5 py-1 text-[10px] transition-colors data-active:bg-transparent data-active:font-semibold data-active:text-[var(--tds-text-primary)] data-active:shadow-none text-[var(--tds-text-tertiary)] hover:text-[var(--tds-text-secondary)]"
                   >
-                    {tab}
+                    {orderTab === tab && (
+                      <motion.div
+                        layoutId="sidebar-order-pill"
+                        className="absolute inset-0 rounded-full bg-[var(--tds-surface-overlay)]"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10">{tab}</span>
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -189,12 +197,21 @@ export function RightSidebar() {
     <div className="flex h-full shrink-0 border-l border-[var(--tds-border-default)] text-xs">
 
       {/* Inner content panel */}
-      <div className="flex w-[280px] flex-col overflow-hidden bg-[var(--tds-surface-sidebar)]">
-        {activeId === "my-invest" && <MyInvestPanel />}
-        {activeId === "watchlist" && <WatchlistPanel />}
-        {activeId === "recent"    && <EmptyPanel label="최근 본 종목이 없어요" />}
-        {activeId === "realtime"  && <EmptyPanel label="실시간 종목이 없어요" />}
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeId}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.10 }}
+          className="flex w-[280px] flex-col overflow-hidden bg-[var(--tds-surface-sidebar)]"
+        >
+          {activeId === "my-invest" && <MyInvestPanel />}
+          {activeId === "watchlist" && <WatchlistPanel />}
+          {activeId === "recent"    && <EmptyPanel label="최근 본 종목이 없어요" />}
+          {activeId === "realtime"  && <EmptyPanel label="실시간 종목이 없어요" />}
+        </motion.div>
+      </AnimatePresence>
 
       {/* Outer nav rail */}
       <div className="flex w-12 shrink-0 flex-col items-center border-l border-[var(--tds-border-default)] bg-[var(--tds-surface-sidebar)] py-2">

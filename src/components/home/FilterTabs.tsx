@@ -1,3 +1,5 @@
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
 import { TAB_TRIGGER_CLASS } from "@/lib/constants";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -13,6 +15,8 @@ interface FilterTabsProps {
   onValueChange: (value: string) => void;
   options: readonly string[];
   className?: string;
+  /** Unique id for the sliding pill — must be different for each FilterTabs instance on the same page */
+  layoutId: string;
   /** Collapse into a Select dropdown below the `lg` breakpoint */
   responsive?: boolean;
 }
@@ -22,6 +26,7 @@ export function FilterTabs({
   onValueChange,
   options,
   className,
+  layoutId,
   responsive,
 }: FilterTabsProps) {
   return (
@@ -45,12 +50,23 @@ export function FilterTabs({
       <Tabs
         value={value}
         onValueChange={onValueChange}
-        className={`shrink-0 flex-row gap-0${responsive ? " hidden xl:block" : ""}${className ? ` ${className}` : ""}`}
+        className={cn("shrink-0 flex-row gap-0", responsive && "hidden xl:block", className)}
       >
         <TabsList className="h-auto gap-0 rounded-lg bg-[var(--tds-surface-overlay)] p-0.5">
           {options.map((opt) => (
-            <TabsTrigger key={opt} value={opt} className={TAB_TRIGGER_CLASS}>
-              {opt}
+            <TabsTrigger
+              key={opt}
+              value={opt}
+              className={cn(TAB_TRIGGER_CLASS, "relative data-active:bg-transparent data-active:shadow-none")}
+            >
+              {opt === value && (
+                <motion.div
+                  layoutId={layoutId}
+                  className="absolute inset-0 rounded-md bg-[var(--tds-surface-base)] shadow-sm"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{opt}</span>
             </TabsTrigger>
           ))}
         </TabsList>

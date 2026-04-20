@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -99,6 +100,7 @@ export function HomeView() {
             value={viewTab}
             onValueChange={setViewTab}
             options={VIEW_TABS}
+            layoutId="view-tabs"
           />
         </div>
 
@@ -112,12 +114,14 @@ export function HomeView() {
             options={MARKET_TABS}
             className="mr-2"
             responsive
+            layoutId="market-tabs"
           />
           <FilterTabs
             value={sortTab}
             onValueChange={setSortTab}
             options={SORT_TABS}
             className="mr-2"
+            layoutId="sort-tabs"
           />
           <FilterTabs
             value={timeTab}
@@ -125,6 +129,7 @@ export function HomeView() {
             options={TIME_TABS}
             className="mr-1"
             responsive
+            layoutId="time-tabs"
           />
 
           <Button
@@ -152,19 +157,30 @@ export function HomeView() {
             viewTab === VIEW_REALTIME ? "min-w-0 flex-[3]" : "flex-1",
           )}
         >
-          {viewTab === VIEW_REALTIME ? (
-            <StockRankList
-              onFocus={setFocusedSymbol}
-              focusedSymbol={focusedSymbol}
-              marketFilter={marketTab}
-              sortBy={sortTab}
-              timeFrame={timeTab}
-            />
-          ) : viewTab === VIEW_TRENDING ? (
-            <TrendingCategoriesView />
-          ) : (
-            <InvestorTrendView />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={viewTab}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.12 }}
+              className="flex flex-col h-full"
+            >
+              {viewTab === VIEW_REALTIME ? (
+                <StockRankList
+                  onFocus={setFocusedSymbol}
+                  focusedSymbol={focusedSymbol}
+                  marketFilter={marketTab}
+                  sortBy={sortTab}
+                  timeFrame={timeTab}
+                />
+              ) : viewTab === VIEW_TRENDING ? (
+                <TrendingCategoriesView />
+              ) : (
+                <InvestorTrendView />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {viewTab === VIEW_REALTIME && (
