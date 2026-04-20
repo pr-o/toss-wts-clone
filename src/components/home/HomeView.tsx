@@ -99,6 +99,7 @@ export function HomeView() {
             value={viewTab}
             onValueChange={setViewTab}
             options={VIEW_TABS}
+            layoutId="view-tabs"
           />
         </div>
 
@@ -112,12 +113,14 @@ export function HomeView() {
             options={MARKET_TABS}
             className="mr-2"
             responsive
+            layoutId="market-tabs"
           />
           <FilterTabs
             value={sortTab}
             onValueChange={setSortTab}
             options={SORT_TABS}
             className="mr-2"
+            layoutId="sort-tabs"
           />
           <FilterTabs
             value={timeTab}
@@ -125,6 +128,7 @@ export function HomeView() {
             options={TIME_TABS}
             className="mr-1"
             responsive
+            layoutId="time-tabs"
           />
 
           <Button
