@@ -50,7 +50,7 @@ export function FilterTabs({
       <Tabs
         value={value}
         onValueChange={onValueChange}
-        className={`shrink-0 flex-row gap-0${responsive ? " hidden xl:block" : ""}${className ? ` ${className}` : ""}`}
+        className={cn("shrink-0 flex-row gap-0", responsive && "hidden xl:block", className)}
       >
         <TabsList className="h-auto gap-0 rounded-lg bg-[var(--tds-surface-overlay)] p-0.5">
           {options.map((opt) => (

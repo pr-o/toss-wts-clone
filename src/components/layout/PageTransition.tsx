@@ -14,7 +14,6 @@ export function PageTransition({ children }: { children: ReactNode }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
-        style={{ display: "contents" }}
       >
         {children}
       </motion.div>
